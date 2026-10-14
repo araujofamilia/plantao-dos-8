@@ -784,7 +784,7 @@ const PERFIS = [
   var N_PECAS = 10, N_FRASES = 10;
   var KEY = "plantao-dos-8:v2";
   var KEY_TENT = "plantao-dos-8:tentativas";
-  var VERSAO = "2026-10-14b";
+  var VERSAO = "2026-10-14c";
   var app = document.getElementById("app");
   var barra = document.getElementById("barra");
   var gaveta = document.getElementById("gaveta");
@@ -799,7 +799,6 @@ const PERFIS = [
       r1: {}, rasc: { f: null, g: null, e: null },
       frases: [], r2: {}, a2ok: false,
       par: 0, ordemOps: {}, r3: {}, a3ok: false,
-      vered: { caso: "", txt: "" },
       envio: { estado: "nada", comprovante: "", quando: "" }
     };
   }
@@ -890,11 +889,10 @@ const PERFIS = [
   function telaBarra() {
     if (S.tela === "capa" || S.tela === "regras") { barra.innerHTML = ""; return; }
     var n = S.ordem.length || N_PECAS;
-    var onde = "", passo = 0, totalPassos = n + 3;
+    var onde = "", passo = 0, totalPassos = n + 2;
     if (S.tela === "caso") { onde = "Peça " + (S.i + 1) + " de " + n; passo = S.i + (S.fase === "parecer" ? 1 : 0); }
     else if (S.tela === "a2") { onde = "Fato, versão ou interpretação"; passo = n + (S.a2ok ? 1 : 0); }
     else if (S.tela === "a3") { onde = "Duas capas, um fato"; passo = n + 1 + (S.a3ok ? 1 : 0); }
-    else if (S.tela === "vered") { onde = "O veredicto da coluna"; passo = n + 2; }
     else { onde = "Resultado e gabarito"; passo = totalPassos; }
     var c = contas();
     var h = '<div class="barra"><div class="in"><span class="marca">Plantão <span>dos 8</span></span>';
@@ -950,7 +948,7 @@ const PERFIS = [
     GRAUS.forEach(function (g) { h += "<div><strong>" + g.t + ":</strong> " + g.def + ".</div>"; });
     h += "</div>";
     h += '<p class="ouro">Regra de ouro da disciplina: veredicto sem evidência não pontua. O grau vale 1 ponto só quando o fundamento é o principal e a evidência está certa.</p>';
-    h += "<p>Depois das peças vêm três etapas curtas: fato, versão ou interpretação, com dez frases reais; duas capas sobre o mesmo fato; e o veredicto da sua coluna, escrito por você.</p>";
+    h += "<p>Depois das peças vêm duas etapas curtas: fato, versão ou interpretação, com dez frases reais, e duas capas sobre o mesmo fato.</p>";
     h += "<p><strong>Nível alto.</strong> As peças têm armadilhas de propósito. Várias cumprem um fundamento e ferem outro, e o fundamento vizinho costuma parecer o certo. Depois de confirmar, não dá para voltar. É a mesma régua da prova.</p>";
     h += '<p class="small muted">O botão Régua, no alto da tela, abre os oito fundamentos na formulação da disciplina sempre que você quiser.</p>';
     h += '<button class="btn cherry" data-acao="comecar">Abrir a primeira peça</button>';
@@ -1096,38 +1094,10 @@ const PERFIS = [
       var faltam = pr.perguntas.filter(function (q) { return S.r3[q.id] === undefined; }).length;
       h += '<button class="btn cherry" data-acao="conferirA3"' + (faltam ? " disabled" : "") + ">Conferir</button>";
     } else {
-      h += '<button class="btn" data-acao="irVered">Seguir para o veredicto da coluna</button>';
+      h += '<button class="btn cherry" data-acao="entregar">Entregar e ver o gabarito</button>';
+      h += '<p class="small muted" style="margin-top:.5rem">Confira seu nome antes: ' + esc(S.nome) + (S.ra ? ", RA " + esc(S.ra) : "") + ".</p>";
     }
     return h + "</div>";
-  }
-
-  /* ---------------- veredicto ---------------- */
-
-  var MIN_VERED = 150, MAX_VERED = 900;
-  function telaVered() {
-    var h = '<div class="wrap">';
-    h += '<h2 tabindex="-1">O veredicto da sua coluna</h2>';
-    h += "<p>Escolha uma das peças do seu plantão e escreva o veredicto, de 2 a 4 linhas: esta cobertura está à altura dos fundamentos do jornalismo? Por quê? Cite o que, na peça, sustenta o que você diz.</p>";
-    h += '<p class="small muted">Esta parte não entra na pontuação automática. É lida pelo professor, e é o formato do veredicto da prova.</p>';
-    h += '<div class="campo"><label for="v-caso">Peça</label><select id="v-caso"><option value="">Escolha a peça</option>';
-    S.ordem.forEach(function (id, n) {
-      var c = caso(id);
-      h += '<option value="' + c.id + '"' + (S.vered.caso === c.id ? " selected" : "") + ">" + (n + 1) + ". " + esc(c.veiculo) + ", " + esc(c.titulo.length > 60 ? c.titulo.slice(0, 58) + "…" : c.titulo) + "</option>";
-    });
-    h += "</select></div>";
-    h += '<div class="campo"><label for="v-txt">Veredicto</label><textarea id="v-txt" maxlength="' + MAX_VERED + '" placeholder="Ex.: A peça cumpre parcialmente o fundamento ... porque ...">' + esc(S.vered.txt) + "</textarea>";
-    h += '<p class="contador" id="contador"></p></div>';
-    h += '<p class="falta" id="falta-v"></p>';
-    h += '<button class="btn cherry" id="btn-entregar" data-acao="entregar">Entregar e ver o gabarito</button>';
-    h += '<p class="small muted" style="margin-top:.5rem">Confira seu nome antes: ' + esc(S.nome) + (S.ra ? ", RA " + esc(S.ra) : "") + ".</p>";
-    return h + "</div>";
-  }
-  function atualizaVered() {
-    var t = document.getElementById("v-txt"), cont = document.getElementById("contador"), b = document.getElementById("btn-entregar"), sel = document.getElementById("v-caso");
-    if (!t) return;
-    var n = (t.value || "").trim().length;
-    if (cont) cont.textContent = n < MIN_VERED ? "Faltam " + (MIN_VERED - n) + " caracteres" : n + " caracteres";
-    if (b) b.disabled = n < MIN_VERED || !(sel && sel.value);
   }
 
   /* ---------------- entrega para a planilha ---------------- */
@@ -1167,7 +1137,6 @@ const PERFIS = [
   function montaEntrega() {
     var c = contas();
     var min = S.inicio && S.fim ? Math.round((S.fim - S.inicio) / 60000) : null;
-    var vc = caso(S.vered.caso);
     var dados = {
       jogo: "plantao-dos-8", versao: VERSAO, tentativa: S.tentativa,
       inicio: S.inicio ? new Date(S.inicio).toISOString() : null, fim: S.fim ? new Date(S.fim).toISOString() : null, minutos: min,
@@ -1183,7 +1152,7 @@ const PERFIS = [
       aproveitamento: c.pct + "%",
       comprovante: S.envio.comprovante,
       respostas: textoRespostas(),
-      veredicto: (vc ? "Peça: " + vc.veiculo + ", " + vc.data + ", " + vc.titulo + "\n\n" : "") + (S.vered.txt || "").trim(),
+      veredicto: "",
       dados: JSON.stringify(dados)
     };
   }
@@ -1284,11 +1253,9 @@ const PERFIS = [
     else if (S.tela === "caso") h = S.fase === "parecer" ? telaParecer() : telaCaso();
     else if (S.tela === "a2") h = telaA2();
     else if (S.tela === "a3") h = telaA3();
-    else if (S.tela === "vered") h = telaVered();
     else h = telaFim();
     app.innerHTML = h;
     telaBarra();
-    if (S.tela === "vered") atualizaVered();
     if (scroll === "topo") {
       window.scrollTo(0, 0);
       var foco = app.querySelector("h1[tabindex], h2[tabindex]");
@@ -1309,12 +1276,6 @@ const PERFIS = [
 
   /* ---------------- ações ---------------- */
 
-  document.addEventListener("input", function (ev) {
-    if (ev.target && ev.target.id === "v-txt") { S.vered.txt = ev.target.value; salvar(); atualizaVered(); }
-  });
-  document.addEventListener("change", function (ev) {
-    if (ev.target && ev.target.id === "v-caso") { S.vered.caso = ev.target.value; salvar(); atualizaVered(); }
-  });
   gaveta.addEventListener("click", function (ev) { if (ev.target === gaveta) gaveta.hidden = true; });
   document.addEventListener("keydown", function (ev) { if (ev.key === "Escape" && !gaveta.hidden) gaveta.hidden = true; });
 
@@ -1362,10 +1323,8 @@ const PERFIS = [
     if (a === "irA3") { S.tela = "a3"; salvar(); render("topo"); return; }
     if (a === "q") { S.r3[b.getAttribute("data-q")] = Number(b.getAttribute("data-k")); salvar(); mantemRolagem(); return; }
     if (a === "conferirA3") { S.a3ok = true; salvar(); mantemRolagem(); return; }
-    if (a === "irVered") { S.tela = "vered"; salvar(); render("topo"); return; }
     if (a === "entregar") {
-      var txt = (S.vered.txt || "").trim();
-      if (txt.length < MIN_VERED || !S.vered.caso) { document.getElementById("falta-v").textContent = "Escolha a peça e escreva pelo menos " + MIN_VERED + " caracteres."; return; }
+      if (!S.a3ok) return;
       S.fim = Date.now();
       S.envio.comprovante = "P8-" + hashCurto(S.nome + "|" + S.fim + "|" + contas().total);
       S.tela = "fim"; salvar(); enviarAgora(); return;
