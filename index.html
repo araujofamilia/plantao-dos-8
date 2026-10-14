@@ -1,0 +1,1380 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Plantão dos 8</title>
+<meta name="description" content="Newsgame de Fundamentos de Jornalismo: a régua dos 8 fundamentos aplicada a peças reais do acervo da disciplina.">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%93%8F%3C/text%3E%3C/svg%3E">
+<style>
+:root {
+  --cherry: #990011;
+  --navy: #2F3C7E;
+  --paper: #FCF6F5;
+  --bg: #FCF6F5;
+  --text: #1C2143;
+  --muted: #595F7F;
+  --line: #E6DCD9;
+  --surface: #FFFFFF;
+  --soft: #F4EAE8;
+  --accent: #2F3C7E;
+  --accent-2: #990011;
+  --ok: #1E6B45;
+  --ok-soft: #E3F1E9;
+  --nok-soft: #F7E1E4;
+  --focus: #D98E04;
+  --serif: Cambria, Georgia, "Noto Serif", "Times New Roman", serif;
+  --sans: Calibri, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color-scheme: light;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #11152E; --text: #EFE7E4; --muted: #A9AEC8; --line: #2B3260;
+    --surface: #1A2045; --soft: #222A55; --accent: #A3AEEF; --accent-2: #F08494;
+    --ok: #7EE0A6; --ok-soft: #173A2B; --nok-soft: #3A1A2A;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #11152E; --text: #EFE7E4; --muted: #A9AEC8; --line: #2B3260;
+  --surface: #1A2045; --soft: #222A55; --accent: #A3AEEF; --accent-2: #F08494;
+  --ok: #7EE0A6; --ok-soft: #173A2B; --nok-soft: #3A1A2A;
+  color-scheme: dark;
+}
+*, *::before, *::after { box-sizing: inherit; }
+html { -webkit-text-size-adjust: 100%; scroll-padding-top: 4.5rem; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 17px/1.55 var(--sans); -webkit-font-smoothing: antialiased; }
+@media (max-width: 360px) { body { font-size: 16px; } }
+.wrap { max-width: 38rem; margin: 0 auto; padding: 1.1rem 1rem 2.5rem; }
+h1, h2, h3 { font-family: var(--serif); font-weight: 700; line-height: 1.12; margin: 0 0 .6rem; }
+h1 { font-size: clamp(2.4rem, 10vw, 3.4rem); letter-spacing: -.01em; }
+h2 { font-size: 1.6rem; }
+h3 { font-size: 1.15rem; }
+p { margin: 0 0 .8rem; }
+.muted { color: var(--muted); }
+.small { font-size: .88rem; }
+h1:focus, h2:focus { outline: none; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+button { font: inherit; cursor: pointer; color: inherit; }
+.btn { display: block; width: 100%; padding: .95rem 1rem; border: 0; border-radius: 12px; background: var(--navy); color: #fff; font-weight: 700; font-size: 1.02rem; text-align: center; margin-top: 1rem; text-decoration: none; }
+.btn.cherry { background: var(--cherry); }
+.btn.ghost { background: transparent; color: var(--accent); border: 1.5px solid var(--line); }
+.btn:disabled { opacity: .42; cursor: not-allowed; }
+.linkbtn { background: none; border: 0; padding: .4rem 0; color: var(--muted); text-decoration: underline; font-size: .88rem; }
+.falta { font-size: .88rem; color: var(--accent-2); min-height: 1.3em; margin: .4rem 0 0; }
+
+/* topo fixo */
+.barra { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); border-bottom: 1px solid var(--line); }
+.barra .in { max-width: 38rem; margin: 0 auto; padding: .55rem 1rem; display: flex; align-items: center; gap: .7rem; }
+.barra .marca { font-family: var(--serif); font-weight: 700; font-size: 1.05rem; white-space: nowrap; }
+.barra .marca span { color: var(--accent-2); }
+.barra .onde { flex: 1; font-size: .82rem; color: var(--muted); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.barra .pts { font-family: var(--serif); font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.barra .regua-btn { border: 1.5px solid var(--line); background: var(--surface); border-radius: 999px; padding: .25rem .7rem; font-size: .82rem; font-weight: 700; color: var(--accent); }
+.progresso { height: 4px; background: var(--soft); }
+.progresso i { display: block; height: 100%; background: var(--cherry); transition: width .4s ease; }
+
+/* capa */
+.capa h1 { margin-top: .6rem; }
+.capa h1 span { color: var(--cherry); }
+.capa .lede { font-size: 1.1rem; color: var(--muted); }
+.regua-visual { display: grid; grid-template-columns: repeat(8, 1fr); border: 1.5px solid var(--text); border-radius: 6px; overflow: hidden; margin: 1rem 0 1.2rem; }
+.regua-visual span { text-align: center; font-family: var(--serif); font-weight: 700; padding: .5rem 0 .35rem; border-right: 1px solid var(--line); position: relative; }
+.regua-visual span:last-child { border-right: 0; }
+.regua-visual span::before { content: ""; position: absolute; top: 0; left: 50%; width: 1px; height: .35rem; background: var(--text); }
+.campo { margin-top: .9rem; }
+.campo label { display: block; font-weight: 700; margin-bottom: .3rem; }
+.campo input, .campo select { width: 100%; font: inherit; padding: .8rem .9rem; border-radius: 10px; border: 1.5px solid var(--line); background: var(--surface); color: var(--text); }
+.campo .dica { font-size: .82rem; color: var(--muted); margin-top: .25rem; }
+.regras { list-style: none; padding: 0; margin: .4rem 0 1rem; counter-reset: r; }
+.regras li { position: relative; padding: .55rem 0 .55rem 2.5rem; border-bottom: 1px solid var(--line); }
+.regras li::before { counter-increment: r; content: counter(r); position: absolute; left: 0; top: .5rem; width: 1.8rem; height: 1.8rem; border-radius: 50%; display: grid; place-items: center; background: var(--navy); color: #fff; font-weight: 700; font-family: var(--serif); }
+.graus { display: grid; gap: .4rem; margin: .5rem 0 1rem; }
+.graus div { padding: .55rem .75rem; border-radius: 10px; background: var(--soft); font-size: .95rem; }
+.graus strong { font-family: var(--serif); }
+.ouro { border-left: 4px solid var(--cherry); padding: .2rem 0 .2rem .8rem; font-weight: 700; }
+.aviso { font-size: .88rem; color: var(--muted); margin-top: .8rem; }
+
+/* peça */
+.peca { border-radius: 14px; border: 1.5px solid var(--line); background: var(--surface); overflow: hidden; margin: .4rem 0 1.1rem; }
+.peca .cab { display: flex; justify-content: space-between; align-items: baseline; gap: .6rem; padding: .55rem .9rem; background: var(--soft); font-size: .82rem; color: var(--muted); }
+.peca .cab strong { color: var(--text); font-size: .9rem; }
+.peca .corpo { padding: .8rem .95rem .9rem; }
+.peca .tit { font-family: var(--serif); font-size: 1.22rem; font-weight: 700; line-height: 1.2; margin: 0 0 .65rem; }
+.peca .corpo p { font-size: .97rem; margin: 0 0 .55rem; }
+.peca .fonte { font-size: .78rem; color: var(--muted); border-top: 1px solid var(--line); padding: .45rem .95rem .55rem; margin: 0; }
+.etapa { margin-top: 1.1rem; }
+.etapa > .rot { display: flex; gap: .5rem; align-items: baseline; font-weight: 700; margin-bottom: .45rem; }
+.etapa > .rot .n { font-family: var(--serif); color: var(--accent-2); }
+.fundgrid { display: grid; grid-template-columns: 1fr 1fr; gap: .45rem; }
+@media (max-width: 420px) { .fundgrid { grid-template-columns: 1fr; } }
+.fundgrid button, .opc { text-align: left; padding: .6rem .7rem; border-radius: 10px; border: 1.5px solid var(--line); background: var(--surface); line-height: 1.3; font-size: .93rem; }
+.fundgrid button .n { font-family: var(--serif); font-weight: 700; margin-right: .3rem; color: var(--accent-2); }
+.fundgrid button[aria-pressed="true"], .opc[aria-pressed="true"], .chip[aria-pressed="true"] { background: var(--navy); color: #fff; border-color: var(--navy); }
+.fundgrid button[aria-pressed="true"] .n { color: #fff; }
+.chips { display: flex; flex-wrap: wrap; gap: .45rem; }
+.chip { padding: .55rem .85rem; border-radius: 999px; border: 1.5px solid var(--line); background: var(--surface); line-height: 1.25; font-size: .95rem; }
+.opcs { display: grid; gap: .45rem; }
+.opc { font-size: .95rem; padding: .7rem .8rem; }
+
+/* parecer */
+.resultado { border-radius: 14px; padding: .9rem 1rem; margin: .3rem 0 1rem; color: #fff; background: var(--navy); }
+.resultado.baixo { background: var(--cherry); }
+.resultado h2 { font-size: 1.4rem; margin-bottom: .2rem; }
+.resultado p { margin: 0; }
+.linhas { list-style: none; padding: 0; margin: 0 0 1rem; }
+.linhas li { display: grid; grid-template-columns: 1fr auto; gap: .2rem .8rem; padding: .55rem 0; border-bottom: 1px solid var(--line); font-size: .95rem; }
+.linhas li .o-que { font-weight: 700; }
+.linhas li .det { grid-column: 1 / -1; color: var(--muted); font-size: .88rem; }
+.linhas li .p { font-family: var(--serif); font-weight: 700; }
+.marca-ok { color: var(--ok); font-weight: 700; }
+.marca-nok { color: var(--accent-2); font-weight: 700; }
+.bloco { margin: 0 0 1rem; }
+.bloco h3 { font-size: 1.02rem; margin-bottom: .3rem; }
+.nota { border-left: 4px solid var(--accent); padding: .1rem 0 .1rem .8rem; }
+.alerta { border-left: 4px solid var(--accent-2); padding: .1rem 0 .1rem .8rem; }
+
+/* ato 2 */
+.frase { border-radius: 12px; border: 1.5px solid var(--line); background: var(--surface); padding: .75rem .85rem; margin-bottom: .6rem; }
+.frase .txt { font-family: var(--serif); font-size: 1.04rem; line-height: 1.35; margin: 0 0 .3rem; }
+.frase .de { font-size: .8rem; color: var(--muted); display: block; margin-bottom: .5rem; }
+.frase.certo { border-color: var(--ok); background: var(--ok-soft); }
+.frase.errado { border-color: var(--accent-2); background: var(--nok-soft); }
+.frase .exp { font-size: .9rem; margin: .5rem 0 0; }
+
+/* ato 3 */
+.capas { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; margin: .5rem 0 1rem; }
+@media (max-width: 420px) { .capas { grid-template-columns: 1fr; } }
+.capinha { background: #fff; color: #141414; border-radius: 8px; padding: .7rem .75rem .8rem; border: 1px solid #d9d4cf; font-family: Georgia, "Times New Roman", serif; }
+.capinha .mast { font-weight: 700; font-size: 1.02rem; border-bottom: 3px double #141414; padding-bottom: .25rem; margin-bottom: .45rem; }
+.capinha .mast small { display: block; font-family: Arial, sans-serif; font-weight: 400; font-size: .68rem; color: #555; }
+.capinha .man { font-size: 1.12rem; font-weight: 700; line-height: 1.18; margin: 0 0 .35rem; }
+.capinha .fina { font-family: Arial, sans-serif; font-size: .78rem; color: #444; margin: 0; }
+.perg { margin-bottom: 1.1rem; }
+.perg .q { font-weight: 700; margin-bottom: .4rem; }
+.perg .exp { font-size: .9rem; margin: .5rem 0 0; padding: .5rem .7rem; border-radius: 10px; background: var(--soft); }
+
+/* veredicto e envio */
+textarea { width: 100%; min-height: 8rem; font: inherit; font-size: .97rem; padding: .7rem .8rem; border-radius: 10px; border: 1.5px solid var(--line); background: var(--surface); color: var(--text); }
+.contador { font-size: .8rem; color: var(--muted); text-align: right; margin-top: .2rem; }
+.comprovante { background: var(--navy); color: #fff; border-radius: 14px; padding: .9rem 1rem; margin: .6rem 0 1rem; }
+.comprovante .cod { font-family: var(--serif); font-size: 1.7rem; font-weight: 700; letter-spacing: .04em; margin: .15rem 0 .2rem; }
+.comprovante p { margin: 0 0 .3rem; }
+.placar { display: grid; grid-template-columns: repeat(3, 1fr); gap: .5rem; margin: .5rem 0 1rem; }
+.placar div { background: var(--soft); border-radius: 12px; padding: .6rem .7rem; }
+.placar .n { font-family: var(--serif); font-size: 1.5rem; font-weight: 700; line-height: 1.1; }
+.placar .r { font-size: .78rem; color: var(--muted); }
+.perfil { font-family: var(--serif); font-size: 1.35rem; font-weight: 700; color: var(--accent-2); margin-bottom: .2rem; }
+.tabela { width: 100%; border-collapse: collapse; font-size: .88rem; }
+.tabela th, .tabela td { text-align: left; padding: .4rem .3rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+.tabela th { color: var(--muted); font-size: .76rem; font-weight: 700; }
+.gab { border: 1.5px solid var(--line); border-radius: 12px; background: var(--surface); padding: .65rem .8rem .3rem; margin-bottom: .55rem; }
+.gab p { font-size: .92rem; margin: 0 0 .4rem; }
+.gab .gab-tit { display: flex; justify-content: space-between; gap: .6rem; font-weight: 700; margin-bottom: .15rem; }
+.gab .gab-peca { font-family: var(--serif); font-style: italic; color: var(--muted); }
+details { margin-top: .8rem; }
+details summary { cursor: pointer; color: var(--muted); font-size: .9rem; }
+
+/* gaveta da régua */
+.gaveta { position: fixed; inset: 0; z-index: 30; background: rgba(10, 12, 30, .55); display: flex; align-items: flex-end; justify-content: center; }
+.gaveta[hidden] { display: none; }
+.gaveta .folha { background: var(--bg); color: var(--text); width: 100%; max-width: 38rem; max-height: 86vh; overflow-y: auto; border-radius: 18px 18px 0 0; padding: 1rem 1rem calc(1.2rem + env(safe-area-inset-bottom, 0px)); }
+.gaveta .folha h2 { font-size: 1.3rem; }
+.gaveta ol { list-style: none; padding: 0; margin: 0; }
+.gaveta li { padding: .55rem 0; border-bottom: 1px solid var(--line); }
+.gaveta li strong { font-family: var(--serif); }
+.gaveta li .num { color: var(--accent-2); font-family: var(--serif); font-weight: 700; margin-right: .3rem; }
+.gaveta li p { margin: .15rem 0 0; font-size: .92rem; color: var(--muted); }
+.gaveta .dist { font-size: .9rem; margin-top: .8rem; padding: .6rem .75rem; border-radius: 10px; background: var(--soft); }
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<div id="barra"></div>
+<main id="app"></main>
+<div class="gaveta" id="gaveta" hidden>
+  <div class="folha" role="dialog" aria-modal="true" aria-labelledby="gaveta-tit">
+    <h2 id="gaveta-tit">A régua dos 8 fundamentos</h2>
+    <p class="small muted">Na formulação da disciplina.</p>
+    <ol id="gaveta-lista"></ol>
+    <p class="dist"><strong>5 e 3 são irmãos, não gêmeos.</strong> Liberdade de imprensa (5) é a proteção contra pressões de fora: Estado, tribunais, anunciantes, poderosos. Independência editorial (3) é a disciplina de dentro: publicar o que incomoda até aliados, anunciantes e o dono do jornal.</p>
+    <p class="dist"><strong>Fato, versão, interpretação.</strong> Fato verificado é o que se confere em registro ou documento. Versão é o relato de um envolvido. Interpretação é a leitura do que o fato significa ou causa.</p>
+    <button class="btn" data-acao="fecharRegua">Voltar ao plantão</button>
+  </div>
+</div>
+<noscript><div class="wrap"><h1>Plantão dos 8</h1><p>Este jogo precisa de JavaScript ligado no navegador.</p></div></noscript>
+
+<script>
+/* =====================================================================
+   CONTEÚDO DO PLANTÃO DOS 8
+   Peças reais do acervo da disciplina (pastas "Jornais" e "vídeos
+   variados" do Drive do professor), conferidas no PDF ou na legenda.
+   ===================================================================== */
+
+/* Formulação canônica, conferida no documento "Fundamentos do jornalismo" (AVA). */
+const FUNDAMENTOS = [
+  { nome: "Veracidade e Apuração dos Fatos", curto: "Veracidade e apuração",
+    principio: "O compromisso com a verdade exige verificação rigorosa, consulta a múltiplas fontes e resistência a pressões externas." },
+  { nome: "Responsabilidade Social e Interesse Público", curto: "Interesse público",
+    principio: "O jornalismo cumpre uma função essencial para a sociedade ao revelar injustiças, proteger direitos e fomentar o debate público sobre temas de relevância coletiva." },
+  { nome: "Independência Editorial", curto: "Independência editorial",
+    principio: "O jornalismo deve manter autonomia em relação a governos, partidos, empresas e interesses econômicos, resistindo a censura e coerções." },
+  { nome: "Ética Jornalística e Limites da Atuação", curto: "Ética e limites",
+    principio: "O jornalista deve respeitar a dignidade humana, evitando espetacularização, julgamentos prévios e danos morais." },
+  { nome: "Liberdade de Imprensa e Expressão", curto: "Liberdade de imprensa",
+    principio: "A liberdade de imprensa é pilar da democracia, garantindo o direito à informação e à crítica, mesmo diante de riscos ou pressões institucionais." },
+  { nome: "Jornalismo Investigativo como Pilar da Democracia", curto: "Jornalismo investigativo",
+    principio: "A investigação jornalística tem a missão de trazer à luz o que está oculto, expondo práticas ilícitas e abusos de poder." },
+  { nome: "Transparência e Prestação de Contas", curto: "Transparência",
+    principio: "O jornalista deve admitir erros, esclarecer procedimentos e se responsabilizar pelas informações publicadas." },
+  { nome: "Jornalismo como Memória e Testemunho", curto: "Memória e testemunho",
+    principio: "O jornalismo atua como registro histórico e memorial das sociedades, dando voz a vítimas, minorias e fatos esquecidos." }
+];
+
+const GRAUS = [
+  { id: "cumpre", t: "Cumpre", def: "realiza o fundamento sem falha relevante" },
+  { id: "parcial", t: "Cumpre parcialmente", def: "realiza o fundamento, mas com falha que compromete parte da peça" },
+  { id: "nao", t: "Não cumpre", def: "a falha atinge o centro da peça" }
+];
+
+/* Ato 1. fund e sec usam índice a partir de zero (0 = fundamento 1). */
+const CASOS = [
+  {
+    id: "nhk", veiculo: "NHK WORLD-JAPAN", data: "09/10/2026", formato: "Vídeo, cerca de 7 min",
+    titulo: "AI-pocalypse now",
+    linhas: [
+      "A peça abre dizendo que, há pouco tempo, a discussão sobre inteligência artificial era como ela poderia ajudar a humanidade, e que agora todos temem que ela nos extermine. Logo depois, um pesquisador sem nome teria dito que a extinção pode estar a poucos anos.",
+      "Conta que agentes de IA da criadora do ChatGPT escaparam do ambiente de testes, acessaram o sistema de outra empresa e trocaram mais de 70 mil mensagens, segundo registros que a peça não diz de quem são.",
+      "O repórter informa que a emissora entrevistou cinco pesquisadores de IA no Japão: eles divergem sobre a gravidade, mas concordam que a extinção humana não pode ser descartada. Os cinco não são listados.",
+      "Aparecem ainda, parafraseados, um pesquisador da Universidade de Tóquio, o presidente-executivo de uma empresa de IA e o presidente dos EUA. Ninguém contesta a tese do risco; o fecho fala de como mitigá-lo."
+    ],
+    fund: 0, sec: [], grau: "nao",
+    evid: [
+      "A tese central se apoia numa amostra de cinco pesquisadores que a peça não lista, em registros sem origem e em nenhuma voz que conteste o risco.",
+      "A peça cita nominalmente um pesquisador da Universidade de Tóquio, o presidente-executivo de uma empresa de IA e o presidente dos EUA, todos com cargo.",
+      "O fecho apresenta sinais de progresso, como compromissos firmados por empresas do setor e a discussão de tratados internacionais sobre IA."
+    ],
+    parecer: {
+      fund: "Fundamento 1. A régua pede verificação rigorosa e múltiplas fontes. O tom é de reportagem, mas o que sustenta a tese é amostra anônima e registro sem dono.",
+      grau: "Não cumpre. A falha está no centro: justamente a afirmação mais grave, extinção em poucos anos, fica sem fonte verificável e sem contraditório.",
+      armadilha: "Três fontes nomeadas não fazem pluralidade quando todas apontam para o mesmo lado. E o fecho com sinais de progresso discute como mitigar o risco, não se ele existe: não é contraponto."
+    },
+    fonte: "Acervo de vídeos, pasta NHK WORLD-JAPAN, peça de 09/10/2026. Conferido na legenda; trechos em tradução livre."
+  },
+  {
+    id: "nyt-tempo", veiculo: "The New York Times", data: "08/10/2026", formato: "Vídeo, cerca de 5 min",
+    titulo: "What A.I. Means for the Future of the National Weather Service",
+    linhas: [
+      "O tema é o Serviço Nacional de Meteorologia dos EUA, que perdeu 15% da força de trabalho no ano anterior e reduziu o lançamento de balões meteorológicos. O vazio vem sendo preenchido por IA e por uma startup do Vale do Silício que vende dados ao governo.",
+      "Fala um especialista que passou quase três décadas no serviço, preocupado com a falta dos dados. A narração avisa que nem todos estão convencidos de que isso fez diferença, e entra uma voz: não vejo piora, as previsões parecem tão boas quanto sempre foram.",
+      "Uma das vozes alerta que, quanto mais o serviço depender do setor privado, maior o risco de a transparência minguar.",
+      "No fim, a meta de contratar mais de 145 meteorologistas aparece atribuída ao próprio serviço."
+    ],
+    fund: 0, sec: [], grau: "cumpre",
+    evid: [
+      "A peça procura de propósito quem discorda da tese da piora e atribui ao próprio órgão os números de contratação.",
+      "Uma das fontes alerta que, quanto mais o serviço depender do setor privado, maior o risco de a transparência minguar.",
+      "A peça abre com imagens de cobertura de furacões na televisão e ouve um especialista em furacões com mais de 50 anos de carreira."
+    ],
+    parecer: {
+      fund: "Fundamento 1. O que a peça faz bem é apuração: fonte com credencial dita, contraditório buscado e número atribuído a quem o produziu.",
+      grau: "Cumpre. A tese da piora não é vendida como certeza; a própria peça traz a voz que a contesta.",
+      armadilha: "A palavra transparência aparece na boca de uma fonte, como preocupação com o governo. Isso é conteúdo da peça, não prática do jornal: o fundamento 7 trata de o jornalista esclarecer os próprios procedimentos e admitir os próprios erros."
+    },
+    fonte: "Acervo de vídeos, pasta The New York Times, peça de 08/10/2026. Conferido na legenda; trechos em tradução livre."
+  },
+  {
+    id: "cp-apps", veiculo: "Correio Popular (Campinas)", data: "10/10/2026", formato: "Manchete de capa e p. A5",
+    titulo: "Campinas conta com 348 mil cadastrados para trabalhar com transporte por aplicativos",
+    linhas: [
+      "Com dados da Emdec, o jornal informa 348,2 mil motoristas cadastrados em setembro, alta de 17,71% sobre setembro de 2025. A capa compara o número com a população: equivale a 28,81% dos campineiros.",
+      "Na própria capa, o jornal registra a ressalva da Emdec: nem todos os registrados operam ativamente, e parte deles mora em outros municípios.",
+      "Na página A5, um intertítulo informa que, do total, 79,9 mil estão com o QR Code ativo."
+    ],
+    fund: 0, sec: [], grau: "parcial",
+    evid: [
+      "O texto informa só 79,9 mil com QR Code ativo, mas a manchete e a comparação com a população usam o total bruto.",
+      "Os números vêm da Emdec, a empresa municipal responsável pelo cadastro, e se referem a setembro deste ano.",
+      "A alta de 17,71% compara setembro de 2026 com setembro de 2025, o mesmo mês, o que evita distorção por sazonalidade."
+    ],
+    parecer: {
+      fund: "Fundamento 1. A questão é de rigor: o que exatamente o número mede, e se a manchete diz isso.",
+      grau: "Cumpre parcialmente. A apuração está lá (fonte oficial, ressalva, número de ativos), mas a hierarquia trai a apuração: a manchete e a comparação com a população usam o número que o próprio texto admite estar inflado. Os ativos são cerca de 23% dos cadastrados.",
+      armadilha: "Fonte oficial e comparação no mesmo mês não salvam a manchete. E não é não cumpre: quem lê o texto inteiro recebe a informação certa. O problema é quem lê só a capa, e é a maioria."
+    },
+    fonte: "Acervo de jornais, Correio Popular de 10/10/2026, capa e p. A5. Conferido no PDF."
+  },
+  {
+    id: "cp-pentagono", veiculo: "Correio Popular (Campinas)", data: "04/10/2026", formato: "Manchete de capa e entrevista na p. A4",
+    titulo: "Urnas eletrônicas precisam de atualização de segurança contínua, defende João Brasio",
+    linhas: [
+      "Entrevista com um especialista campineiro em cibersegurança, recebido na redação pelo presidente-executivo do jornal.",
+      "Na capa, o jornal escreve que se diz que a empresa do entrevistado já prestou serviços até para o Pentágono. Ele responde que não pode confirmar nem negar, por causa de contrato de confidencialidade.",
+      "Na entrevista da página A4, perguntado se presta serviços ao Pentágono, ele responde que sim, que é uma das instituições atendidas, e acrescenta que a empresa tem condecorações do Pentágono."
+    ],
+    fund: 0, sec: [6], grau: "nao",
+    evid: [
+      "Capa e entrevista dão versões opostas sobre o Pentágono, a da capa num se diz sem fonte, e o jornal não diz ter conferido nenhuma.",
+      "A entrevista foi concedida a convite do presidente-executivo do jornal, que recebeu o especialista na redação, como a própria capa informa.",
+      "O entrevistado defende, na manchete, que as urnas eletrônicas precisam de atualização de segurança contínua."
+    ],
+    parecer: {
+      fund: "Fundamento 1. A credencial de uma fonte também é fato, e fato se verifica. Aqui o jornal publica a credencial mais vistosa como boato na capa e, páginas depois, como afirmação do próprio interessado.",
+      grau: "Não cumpre. A falha atinge exatamente o que dá autoridade à fonte. O leitor da capa e o leitor da A4 saem com informações opostas, e nenhum dos dois sabe qual é a verdadeira.",
+      armadilha: "O convite do presidente-executivo é um problema de verdade, mas é do fundamento 3, e não é ele que explica o erro: uma entrevista sem convite nenhum também teria de conferir a credencial. Esclarecer a contradição seria o 7, que vale 1 dos 2 pontos."
+    },
+    fonte: "Acervo de jornais, Correio Popular de 04/10/2026, capa e p. A4. Conferido no PDF."
+  },
+  {
+    id: "valor-prev", veiculo: "Valor Econômico", data: "Edição única de 10 a 13/10/2026", formato: "Manchete de capa",
+    titulo: "Previdência pressiona contas públicas e torna-se desafio ao próximo presidente",
+    linhas: [
+      "Na edição que circulou até 13/10, dia em que Estadão, O Globo e Correio Braziliense abriram com o vaivém do TSE sobre um canal de WhatsApp, o Valor elegeu outro assunto para a manchete.",
+      "Linha fina: o envelhecimento da população e a alta dos gastos ampliam a pressão fiscal, e os candidatos não apresentam propostas concretas para reforma.",
+      "A projeção central, a relação entre contribuintes e benefícios caindo de 1,8 hoje para 1 em 2054, é atribuída nominalmente a um pesquisador do Ipea, a partir de dados do INSS e do IBGE."
+    ],
+    fund: 1, sec: [0], grau: "cumpre",
+    evid: [
+      "A manchete cobra dos candidatos proposta para um gasto que pesa sobre todos e atribui a projeção a um pesquisador nomeado.",
+      "Estadão, O Globo e Correio Braziliense abriram a edição de 13/10 com o caso do TSE, e o Valor não o pôs na manchete.",
+      "A edição circula por quatro dias seguidos, de 10 a 13/10, o que dá ao jornal mais tempo para um assunto de fôlego."
+    ],
+    parecer: {
+      fund: "Fundamento 2. Interesse público não é o assunto mais comentado, é o assunto de relevância coletiva. A manchete empurra para o debate um problema que o eleitor vai pagar e que os candidatos evitam.",
+      grau: "Cumpre. O jornal escolhe o tema estrutural, mostra de onde vem o número e cobra quem disputa o cargo.",
+      armadilha: "O que os concorrentes fizeram não é evidência sobre esta capa. E a periodicidade de quatro dias explica a escolha, mas não a justifica: o que a justifica é a relevância. A atribuição nominal da projeção é mérito de apuração: o fundamento 1 vale 1 dos 2 pontos."
+    },
+    fonte: "Acervo de jornais, Valor Econômico nº 6608, capa e p. A4. Conferido no PDF."
+  },
+  {
+    id: "cp-datacenter", veiculo: "Correio Popular (Campinas)", data: "20/09/2026", formato: "Manchete de capa, entrevista na p. A4 e editorial na p. A3",
+    titulo: "Data center adotará soluções para minimizar impactos ambientais, diz executivo",
+    linhas: [
+      "A manchete é a promessa do presidente-executivo da empresa que vai construir um data center de R$ 2,5 bilhões no distrito de Barão Geraldo.",
+      "A capa informa que o executivo esteve no jornal a convite do presidente-executivo do Correio Popular, e a entrevista da p. A4 é apresentada como exclusiva, concedida a esse convite.",
+      "No editorial do mesmo dia, o jornal defende o diálogo da empresa com a população e diz acreditar que a entrevista publicada naquela edição contemplou esse diálogo."
+    ],
+    fund: 2, sec: [6], grau: "parcial",
+    evid: [
+      "O convite do presidente-executivo está dito na capa, mas a manchete fica na voz do empresário e o editorial avaliza a entrevista.",
+      "O investimento inicial anunciado é de R$ 2,5 bilhões, e o empreendimento será construído no distrito de Barão Geraldo, em Campinas.",
+      "O empresário promete soluções para minimizar os impactos ambientais e diz que o data center trará empregos e impostos."
+    ],
+    parecer: {
+      fund: "Fundamento 3. Quando a direção do jornal abre a porta para um empresário e a redação transforma a visita em manchete, a autonomia em relação a interesses econômicos fica sob teste.",
+      grau: "Cumpre parcialmente. Há um gesto real de transparência: o convite está dito na capa. Mas a manchete fica na voz da empresa, e o editorial avaliza a própria entrevista.",
+      armadilha: "Contar a origem da entrevista é mérito do fundamento 7, e por isso ele vale 1 dos 2 pontos. Só que transparência sobre o conflito não apaga o conflito."
+    },
+    fonte: "Acervo de jornais, Correio Popular de 20/09/2026, capa e pp. A3 e A4. Conferido no PDF."
+  },
+  {
+    id: "aj-emir", veiculo: "Al Jazeera English", data: "12/07/2026", formato: "Vídeo curto",
+    titulo: "Remembering Qatar's Father Emir and Al Jazeera's independent legacy",
+    linhas: [
+      "A emissora, criada em 1996 pelo então emir do Catar, relembra o fundador e exibe o discurso dele nos 25 anos da rede.",
+      "Em seguida, informa que o atual emir reafirmou que a Al Jazeera continuará uma plataforma livre e independente, e que assumiu o compromisso de dar à rede tudo de que ela precisa para seguir a sua missão.",
+      "A peça não traz nenhuma voz de fora da emissora e do governo do Catar."
+    ],
+    fund: 2, sec: [6], grau: "nao",
+    evid: [
+      "A rede repete, sem contraponto, a promessa do seu financiador de lhe dar tudo de que precisa e o próprio rótulo de independente.",
+      "A peça informa que a rede foi criada em 1996 pelo então emir do Catar, lembrado hoje como o padrinho da emissora.",
+      "O discurso exibido é o que o fundador fez na comemoração dos 25 anos da rede, lembrado na abertura da peça."
+    ],
+    parecer: {
+      fund: "Fundamento 3. Independência é autonomia em relação a governos. Uma emissora sustentada por um Estado, cobrindo o próprio financiador, está no ponto exato em que esse fundamento é testado.",
+      grau: "Não cumpre. Declarar-se independente não é evidência de independência; a peça reproduz o compromisso do financiador sem nenhuma distância crítica.",
+      armadilha: "Dizer ao espectador de onde vem o dinheiro poderia ser fundamento 7, mas aqui o vínculo aparece como homenagem, não como aviso. Por isso o 7 vale 1 ponto, e não os 2."
+    },
+    fonte: "Acervo de vídeos, pasta Al Jazeera English, peça de 12/07/2026. Conferido na legenda."
+  },
+  {
+    id: "gn-copacabana", veiculo: "GloboNews", data: "23/08/2026", formato: "Vídeo, cerca de 3 min",
+    titulo: "Vídeo de agressores mostra ameaça a homem morto por engano em Copacabana",
+    linhas: [
+      "A peça exibe imagens gravadas pelos próprios agressores do espancamento de Cláudio Rafael Landeiro, 37 anos, acusado sem prova de roubar uma bicicleta em Copacabana. Ele morreu.",
+      "Dá o nome dos quatro presos, a idade de três deles e o que alguns disseram em depoimento, e traz a versão da família: a bicicleta era da irmã dele.",
+      "O texto fala em barbárie e covardia e fecha dizendo que os homens que acusaram sem prova e assassinaram covardemente uma pessoa que nem reagiu foram indiciados e vão responder por homicídio qualificado."
+    ],
+    fund: 3, sec: [7], grau: "parcial",
+    evid: [
+      "O fecho trata como assassinos covardes homens que acabaram de ser indiciados, com adjetivos que antecipam a sentença.",
+      "A peça devolve nome, idade e história à vítima, informa que ela foi acusada sem prova e traz a versão da família.",
+      "A peça informa o que alguns presos disseram em depoimento, inclusive o que confirmou participação e o que negou ter agredido."
+    ],
+    parecer: {
+      fund: "Fundamento 4. A peça mexe com a dignidade humana dos dois lados: a da vítima, que ela protege, e a dos acusados, que ela já sentenciou.",
+      grau: "Cumpre parcialmente. Devolver nome e história a quem foi morto por engano é mérito. Mas barbárie, covardia e assassinaram covardemente, ditos antes de qualquer julgamento, são o julgamento prévio que a régua pede para evitar, por mais revoltante que o vídeo seja.",
+      armadilha: "Dar voz à vítima é o fundamento 8, que vale 1 dos 2 pontos. A evidência de que a peça devolve nome e história sustenta o mérito dela, não o veredicto sobre o limite que ela cruza."
+    },
+    fonte: "Acervo de vídeos, pasta GloboNews, peça de 23/08/2026. Conferido na legenda, que é tradução automática do áudio: as palavras exatas em português podem variar."
+  },
+  {
+    id: "band-perseguicao", veiculo: "Band Jornalismo (Bora Brasil)", data: "29/07/2026", formato: "Entrada ao vivo, trecho de menos de 2 min",
+    titulo: "Perseguição termina com policial baleado e quatro suspeitos mortos",
+    linhas: [
+      "A repórter fala da porta de um hospital do Rio sobre dois episódios na Avenida Brasil: uma tentativa de roubo e, à noite, uma perseguição da PM a dois grupos em dois carros, com intenso tiroteio.",
+      "Os dois policiais atingidos aparecem com patente e nome, e um deles com a idade; um dos dois morreu.",
+      "Dos quatro mortos do outro lado, a peça diz apenas que eram bandidos e não sobreviveram. Ninguém é identificado, e as circunstâncias das mortes não aparecem no trecho."
+    ],
+    fund: 3, sec: [0], grau: "nao",
+    evid: [
+      "Os quatro mortos entram só como bandidos, sem nome e sem apuração das circunstâncias, enquanto os policiais têm nome e patente.",
+      "A entrada é ao vivo, da porta do hospital para onde foram levados os feridos, inclusive um dos policiais baleados.",
+      "A repórter informa que vários motoristas presenciaram a troca de tiros, num trecho da avenida com muitos roubos."
+    ],
+    parecer: {
+      fund: "Fundamento 4. Chamar de bandido quem morreu numa ação policial, sem investigação nem identificação, é julgamento prévio, e aqui ele é definitivo: não haverá julgamento para os mortos.",
+      grau: "Não cumpre. A assimetria é o centro da peça: de um lado, vidas com nome; do outro, uma categoria.",
+      armadilha: "Também falta apuração (fundamento 1), que vale 1 dos 2 pontos. Mas o que a peça faz com as pessoas vem antes da apuração: ela já decidiu quem eram."
+    },
+    fonte: "Acervo de vídeos, pasta Band Jornalismo, peça de 29/07/2026. Conferido na legenda, que é tradução automática do áudio."
+  },
+  {
+    id: "globo-editorial", veiculo: "O Globo", data: "13/10/2026", formato: "Capa e editorial na p. 4",
+    titulo: "Atropelo do TSE é nocivo ao equilíbrio da campanha",
+    linhas: [
+      "A manchete do dia é noticiosa: o parecer técnico do TSE não viu fake news num canal pró-Lula no WhatsApp, Flávio contesta, e o ministro Kassio Nunes Marques convoca as campanhas.",
+      "Na mesma capa, sob o rótulo EDITORIAL, o jornal chama para a sua opinião, publicada na página 4 com esta linha fina: a Justiça Eleitoral não pode se tornar instrumento de censura em favor deste ou daquele candidato.",
+      "O editorial sustenta que, se houve fake news, deveriam cair só as publicações que violam a lei eleitoral, e não o canal inteiro."
+    ],
+    fund: 4, sec: [2], grau: "cumpre",
+    evid: [
+      "O jornal critica uma decisão do tribunal eleitoral em texto marcado como opinião, separado da notícia que informa o fato.",
+      "O parecer técnico citado na manchete não encontrou fake news no canal e contrariou o ato do presidente da Corte.",
+      "O canal em disputa, no WhatsApp, foi criado por um deputado federal e acabou mantido no ar."
+    ],
+    parecer: {
+      fund: "Fundamento 5. Liberdade de imprensa inclui o direito à crítica, também quando o criticado é um tribunal no meio de uma eleição. É pressão institucional de fora, e o jornal se manifesta.",
+      grau: "Cumpre. A crítica vem identificada como editorial, separada da manchete noticiosa, e mira a decisão, não pessoas.",
+      armadilha: "5 e 3 são irmãos, não gêmeos. Independência (3) é a disciplina interna diante de aliados, anunciantes e do próprio dono; por isso o 3 vale 1 dos 2 pontos. E opinar não fere a régua: misturar opinião e notícia é que feriria."
+    },
+    fonte: "Acervo de jornais, O Globo nº 34.035, capa e p. 4. Conferido no PDF."
+  },
+  {
+    id: "em-minerio", veiculo: "Estado de Minas", data: "13/10/2026", formato: "Manchete de capa e reportagem nas pp. 28 e 29",
+    titulo: "Clandestinos saqueiam minério na Grande BH",
+    linhas: [
+      "A linha fina fala em extração ilegal ao sul de Belo Horizonte, que envolveria rede de corrupção e criminosos na linha de frente, com prejuízo estimado em R$ 700 milhões.",
+      "A reportagem é de campo: a equipe do jornal foi aos pontos de extração e testemunhou a atividade.",
+      "Dentro, os R$ 700 milhões aparecem como estimativa de ativistas ambientais que combatem a mineração ilegal, e o esquema da rede é atribuído a um deles. Na capa, o valor sai sem fonte.",
+      "O infográfico lista como fontes a Semad, a Polícia Militar, a Polícia Federal e a Assembleia Legislativa."
+    ],
+    fund: 5, sec: [0], grau: "parcial",
+    evid: [
+      "Os R$ 700 milhões da capa vêm de ativistas e saem sem fonte na primeira página, e a rede de corrupção fica num estima-se sem sujeito.",
+      "O infográfico da reportagem lista como fontes a Semad, a Polícia Militar, a Polícia Federal e a Assembleia Legislativa de Minas.",
+      "Uma operação da Polícia Federal de 2025 aparece como antecedente, e há pedido de lavra aberto na agência de mineração."
+    ],
+    parecer: {
+      fund: "Fundamento 6. É reportagem que vai atrás do que está escondido, crime ambiental e possível corrupção, com presença no local.",
+      grau: "Cumpre parcialmente. O trabalho de campo é real; o número que vende a capa não é do jornal nem de órgão público, é de fonte engajada na causa, e a capa não diz isso.",
+      armadilha: "O infográfico cita Semad, PM, PF e Assembleia, mas nenhum desses órgãos é a fonte dos R$ 700 milhões. Ler a lista de fontes não substitui ler a atribuição de cada número. O 1 vale 1 dos 2 pontos."
+    },
+    fonte: "Acervo de jornais, Estado de Minas nº 29.590, capa e pp. 28 e 29. Conferido no PDF (a manchete foi remontada, porque a camada de texto embaralha as colunas)."
+  },
+  {
+    id: "estadao-correcao", veiculo: "O Estado de S. Paulo", data: "08/10/2026", formato: "Seção Correções, p. A18",
+    titulo: "Correções: composição da Câmara",
+    linhas: [
+      "Na edição de terça-feira, 06/10, o jornal publicou na capa e na p. A13 um infográfico com a composição das bancadas eleitas para a Câmara dos Deputados.",
+      "Dois dias depois, a seção fixa de correções informa que o infográfico teve invertida a posição das ilustrações semicirculares que mostram a composição das bancadas.",
+      "A seção se apresenta como espaço destinado à correção de erros da edição impressa e traz um e-mail para pedidos de correção."
+    ],
+    fund: 6, sec: [0], grau: "cumpre",
+    evid: [
+      "O jornal diz o que errou, em qual edição e em quais páginas, numa seção fixa e pública.",
+      "O jornal mantém, na própria seção, um e-mail para receber pedidos de correção dos leitores.",
+      "O erro estava num infográfico de primeira página sobre a composição das bancadas eleitas."
+    ],
+    parecer: {
+      fund: "Fundamento 7. Admitir o erro em público, com o endereço exato do erro, é o núcleo da prestação de contas.",
+      grau: "Cumpre. A correção identifica a edição, as páginas e o que estava errado.",
+      armadilha: "O erro em si foi falha de veracidade (o fundamento 1 vale 1 dos 2 pontos); o que esta peça faz é corrigir, e corrigir é 7. O e-mail mostra que o canal existe, não que o jornal corrige: a evidência é a correção publicada."
+    },
+    fonte: "Acervo de jornais, Estadão nº 48568, p. A18. Conferido no PDF."
+  },
+  {
+    id: "nyt-raghad", veiculo: "The New York Times", data: "24/07/2026", formato: "Vídeo, cerca de 4 min",
+    titulo: "The Story of a Bright Student Killed in an Israeli Strike",
+    linhas: [
+      "A peça conta a história de Raghad, 17 anos, morta num ataque israelense em Gaza quando atravessava uma rua movimentada. A mãe tinha pedido que ela comprasse pão e ervas na volta da escola.",
+      "A redação obteve e verificou vídeos do ataque, inclusive um que mostra o corpo dela no chão, e registra a versão do Exército de Israel, que diz ter mirado um militante do Hamas e lamenta danos a civis.",
+      "A mãe, a professora e as imagens da família reconstroem a vida dela: ia entrar no último ano do ensino médio e tinha acabado de ser aceita no programa de inteligência artificial da escola."
+    ],
+    fund: 7, sec: [0], grau: "cumpre",
+    evid: [
+      "A peça reconstrói quem Raghad era, com a mãe, a professora e as imagens da família, em vez de deixá-la como número.",
+      "A redação obteve e verificou vídeos do ataque, inclusive imagens de câmera de segurança e de celular.",
+      "A peça registra a versão do Exército de Israel e a nota em que ele lamenta danos a civis não envolvidos."
+    ],
+    parecer: {
+      fund: "Fundamento 8. A peça faz o que o fundamento descreve: dá nome e história a uma vítima que, de outro modo, seria só estatística. A própria narração diz isso no fim.",
+      grau: "Cumpre. O registro é de memória e de testemunho, apoiado em verificação.",
+      armadilha: "Vídeo verificado e versão do Exército são apuração (o fundamento 1 vale 1 dos 2 pontos), não testemunho. E mostrar o corpo da vítima é uma tensão real com o fundamento 4, boa para o debate, mas não é o centro do que a peça faz."
+    },
+    fonte: "Acervo de vídeos, pasta The New York Times, peça de 24/07/2026. Conferido na legenda; trechos em tradução livre."
+  },
+  {
+    id: "estadao-27tiros", veiculo: "O Estado de S. Paulo", data: "12/10/2026", formato: "Chamada de capa e reportagem na p. A20",
+    titulo: "Jovem é morto com 27 tiros em abordagem policial em São Paulo",
+    linhas: [
+      "Na capa: quatro policiais militares dispararam 45 vezes contra Gustavo Munis Santana, de 20 anos, que portava apenas um celular.",
+      "Na página A20, os números são atribuídos à perícia, e o repórter teve acesso ao boletim de ocorrência, no qual os policiais relatam postura ameaçadora do rapaz.",
+      "A Secretaria da Segurança Pública informa que os agentes foram afastados, que a conduta é investigada e que as imagens das câmeras corporais foram pedidas para análise. A irmã do rapaz aparece numa fala dada a outra emissora."
+    ],
+    fund: 1, sec: [5], grau: "cumpre",
+    evid: [
+      "O jornal leva à primeira página uma possível violação de direitos por agentes do Estado, com perícia, boletim de ocorrência e resposta da SSP.",
+      "No boletim de ocorrência, os policiais relatam que o rapaz teve postura ameaçadora durante a abordagem na madrugada.",
+      "A ação aconteceu numa passarela da zona sul de São Paulo, por volta das 2h30 de sábado, perto de Moema."
+    ],
+    parecer: {
+      fund: "Fundamento 2. Revelar injustiças e proteger direitos: uma morte em ação policial, com indícios de excesso, vai para a capa com os dados que a sustentam.",
+      grau: "Cumpre. A capa dá o fato mais grave (só um celular), atribui os números à perícia e registra a versão dos policiais e a resposta do governo.",
+      armadilha: "Parece jornalismo investigativo (6), mas os dados vêm da perícia e do boletim, não de investigação própria; por isso o 6 vale 1 dos 2 pontos. A versão dos policiais é contraditório, mérito de apuração, e não o que decide o fundamento."
+    },
+    fonte: "Acervo de jornais, Estadão nº 48572, capa e p. A20. Conferido no PDF."
+  },
+  {
+    id: "g1-sigilo", veiculo: "g1", data: "12/08/2026", formato: "Vídeo, cerca de 5 min",
+    titulo: "Moraes autoriza buscas contra a fonte de reportagem sobre Flávio Dino",
+    linhas: [
+      "A Polícia Federal fez buscas contra a fonte de um blogueiro do Maranhão que publicou fotos e dados sobre o uso, por parentes do ministro Flávio Dino, de um carro do Tribunal de Justiça do estado. A operação foi autorizada pelo ministro Alexandre de Moraes, com parecer favorável da PGR.",
+      "A peça traz a suspeita da PF: conluio entre o jornalista e um advogado para manchar a imagem do ministro, com uma transferência de R$ 100 mil.",
+      "Traz também a nota do jornalista, que fala em tentativa de criminalizar o jornalismo, e o alerta conjunto das associações de rádio e TV, de jornais e de revistas sobre a quebra do sigilo da fonte, protegido pela Constituição."
+    ],
+    fund: 4, sec: [5], grau: "cumpre",
+    evid: [
+      "A peça põe no centro a quebra do sigilo da fonte e registra a suspeita da PF, a nota do jornalista e o alerta das associações.",
+      "A peça informa que o jornalista já tinha tido celulares, computador e pen drive apreendidos em março.",
+      "A peça informa que a operação foi autorizada por um ministro do STF, com parecer favorável da Procuradoria-Geral."
+    ],
+    parecer: {
+      fund: "Fundamento 5. O sigilo da fonte é condição da liberdade de imprensa; uma busca contra a fonte de uma reportagem é pressão institucional sobre o direito à informação.",
+      grau: "Cumpre. A peça informa a ameaça sem apagar a suspeita da polícia: o leitor recebe as duas coisas e decide.",
+      armadilha: "A reportagem original do blog, sobre o carro oficial, é que seria jornalismo investigativo (6, que vale 1 dos 2 pontos). Esta peça trata do que acontece com quem investiga e com a fonte dele."
+    },
+    fonte: "Acervo de vídeos, pasta g1, peça de 12/08/2026. Conferido na legenda, que é tradução automática do áudio; o título acima é tradução do nome do arquivo."
+  },
+  {
+    id: "nyt-prsm", veiculo: "The New York Times", data: "04/06/2026", formato: "Vídeo, cerca de 5 min",
+    titulo: "How a New U.S. Weapon Killed 21 Civilians in Iran",
+    linhas: [
+      "Um repórter da equipe de investigações visuais mostra, em imagem de satélite, um centro recreativo em Lamerd, no sul do Irã, com apenas um pequeno furo no teto. Ali morreram ao menos quatro crianças; na cidade, ao menos 21 civis.",
+      "O Departamento de Defesa negou ter atacado Lamerd naquele dia e sugeriu que eram armas iranianas. A equipe analisa vídeos quadro a quadro, mostra que o míssil explode no ar, como o novo míssil de precisão americano, e conclui que a negativa não é verdadeira.",
+      "A peça avisa que a maioria das fotos das vítimas vem da mídia estatal iraniana e que cada uma foi verificada, e diz o que não conseguiu fazer: viajar à cidade e saber se prédios militares vizinhos foram atingidos."
+    ],
+    fund: 5, sec: [6], grau: "cumpre",
+    evid: [
+      "A equipe contradiz a negativa do Pentágono com satélite, vídeos analisados quadro a quadro e o padrão de explosão da arma.",
+      "A peça avisa que a maior parte das fotos das vítimas veio da mídia estatal iraniana e que cada uma foi verificada.",
+      "A peça diz que não conseguiu viajar à cidade e que ouviu uma jornalista iraniana que entrevistou as famílias."
+    ],
+    parecer: {
+      fund: "Fundamento 6. Trazer à luz o que está oculto e expor abuso de poder: a redação desmente o governo do próprio país com prova que ela mesma produziu.",
+      grau: "Cumpre. A conclusão vem da análise própria, não de fonte oficial nem de vazamento.",
+      armadilha: "A peça é exemplar em dizer como trabalhou e o que não conseguiu fazer, e isso é fundamento 7 (1 dos 2 pontos). Mas essa transparência está a serviço da investigação; o centro é a descoberta."
+    },
+    fonte: "Acervo de vídeos, pasta The New York Times, peça de 04/06/2026. Conferido na legenda; trechos em tradução livre."
+  },
+  {
+    id: "cb-erramos", veiculo: "Correio Braziliense", data: "06/10/2026", formato: "Seção Erramos, p. 10",
+    titulo: "Erramos",
+    linhas: [
+      "Na edição de 05/10, o dia seguinte ao 1º turno, o jornal informou que o Delegado Éder Mauro (PL-PA) tinha sido eleito para o Senado.",
+      "No dia seguinte, a seção Erramos, na página de Opinião, informa que, diferentemente do que foi publicado, ele não foi eleito, e que a vaga do Pará será ocupada por outro candidato, do União."
+    ],
+    fund: 6, sec: [0], grau: "cumpre",
+    evid: [
+      "O jornal corrige o erro no dia seguinte, diz em qual edição ele saiu e dá a informação certa, numa seção com nome próprio.",
+      "A seção Erramos fica na página de Opinião, e não na editoria de Política, onde saiu a cobertura da eleição.",
+      "O erro tratava do resultado da eleição para o Senado no Pará, publicado no dia seguinte ao 1º turno."
+    ],
+    parecer: {
+      fund: "Fundamento 7. Admitir o erro em público, dizer onde ele saiu e qual é a informação certa: é prestação de contas na forma mais pura.",
+      grau: "Cumpre. A correção é rápida, específica e assumida em primeira pessoa (Erramos).",
+      armadilha: "O erro original foi falha de veracidade (fundamento 1, 1 dos 2 pontos). E a localização da seção pode ser discutida, mas não apaga o que a nota faz: o jornal se responsabiliza pelo que publicou."
+    },
+    fonte: "Acervo de jornais, Correio Braziliense nº 23.208, p. 10. Conferido no PDF."
+  },
+  {
+    id: "nhk-nagasaki", veiculo: "NHK WORLD-JAPAN", data: "26/08/2026", formato: "Vídeo, cerca de 6 min",
+    titulo: "Nagasaki A-bomb survivor faces battle with memory",
+    linhas: [
+      "A peça acompanha Kido Sueichi, 86 anos, exposto à bomba de Nagasaki aos cinco anos, a cerca de 2 km do hipocentro, com queimaduras graves em metade do rosto.",
+      "Ele foi um dos pioneiros do movimento dos sobreviventes e era secretário-geral da organização que ganhou o Nobel da Paz em 2024. Há dois anos, foi diagnosticado com demência.",
+      "Com a filha ao lado, ainda dá palestras, enquanto a lembrança da bomba fica menos nítida. A narração diz que os sobreviventes veem as próprias memórias como ferramenta insubstituível contra as armas nucleares, e que elas estão se apagando."
+    ],
+    fund: 7, sec: [3], grau: "cumpre",
+    evid: [
+      "A peça registra o testemunho de um sobrevivente enquanto ele ainda consegue dá-lo, e faz da perda da memória o próprio assunto.",
+      "A organização dos sobreviventes de que ele foi secretário-geral ganhou o Nobel da Paz em 2024, e ele esteve em Oslo.",
+      "A peça liga o tema aos conflitos no Oriente Médio e na Ucrânia, que reacenderam o medo do uso de armas nucleares."
+    ],
+    parecer: {
+      fund: "Fundamento 8. É o fundamento em estado puro: registro histórico e testemunho de quem viveu, feito no limite do tempo em que ainda é possível.",
+      grau: "Cumpre. A peça não usa o sobrevivente como ilustração; ele é a fonte e o assunto.",
+      armadilha: "Mostrar um homem com demência poderia ferir a dignidade (fundamento 4, 1 dos 2 pontos). Aqui a família participa e ele aparece como testemunha, não como espetáculo: a tensão existe, mas não é o centro."
+    },
+    fonte: "Acervo de vídeos, pasta NHK WORLD-JAPAN, peça de 26/08/2026. Conferido na legenda; trechos em tradução livre."
+  },
+  {
+    id: "g1-911", veiculo: "g1", data: "11/09/2026", formato: "Entrada ao vivo de correspondente",
+    titulo: "25 anos dos atentados de 11 de setembro; homenagem às vítimas",
+    linhas: [
+      "A correspondente lista quem vai às cerimônias: quatro ex-presidentes em Nova York, o vice-presidente, o prefeito da cidade e o presidente no Pentágono, além de eventos na Otan, no Reino Unido e na Itália.",
+      "Descreve a homenagem com 2.977 drones, um por vítima, desenhando as torres gêmeas, feita, segundo os organizadores, com parentes das vítimas, sobreviventes e equipes de resgate.",
+      "Relembra a sequência dos ataques e diz que eles mudaram a política mundial e as regras das viagens aéreas. Nenhuma vítima ou parente é nomeado ou ouvido."
+    ],
+    fund: 7, sec: [1], grau: "parcial",
+    evid: [
+      "A peça lista autoridades e descreve a homenagem, mas nenhuma vítima ou parente é nomeado ou ouvido em 25 anos de memória.",
+      "Segundo os organizadores, a homenagem com 2.977 drones foi feita com parentes das vítimas, sobreviventes e equipes de resgate.",
+      "A peça relembra a sequência dos ataques e diz que eles mudaram a política mundial e as regras das viagens aéreas."
+    ],
+    parecer: {
+      fund: "Fundamento 8. Aniversário de tragédia é o terreno do jornalismo como memória: o que se registra e a quem se dá voz.",
+      grau: "Cumpre parcialmente. A peça marca a data e relembra os fatos, mas a memória que registra é a das autoridades e da cerimônia; as vítimas aparecem como número, mesmo quando a homenagem foi feita com as famílias.",
+      armadilha: "A participação das famílias está na homenagem, não na peça: é o organizador que diz isso. Interesse público (2) vale 1 dos 2 pontos, mas o que a régua cobra aqui é a voz das vítimas."
+    },
+    fonte: "Acervo de vídeos, pasta g1, peça de 11/09/2026. Conferido na legenda, que é tradução automática do áudio; o título acima é tradução do nome do arquivo."
+  }
+];
+
+/* Ato 2: fato, versão ou interpretação. */
+const TIPOS = [
+  { id: "fato", t: "Fato verificado" },
+  { id: "versao", t: "Versão de envolvido" },
+  { id: "interp", t: "Interpretação" }
+];
+const FRASES = [
+  { id: "f1", txt: "Mais de 33 milhões de eleitores não votaram no 1º turno.", de: "O Estado de S. Paulo, 12/10/2026, capa", tipo: "fato",
+    exp: "Número absoluto, conferível nos dados oficiais do TSE." },
+  { id: "f2", txt: "Recorde de 21 governadores já eleitos eleva risco de abstenção.", de: "O Estado de S. Paulo, 12/10/2026, manchete", tipo: "interp",
+    exp: "Que 21 governadores já foram eleitos é fato; que isso eleva o risco de abstenção no 2º turno é uma leitura de causa e efeito, que o jornal transformou em manchete." },
+  { id: "f3", txt: "Os policiais relataram que o rapaz, morto com 27 tiros, teve postura ameaçadora.", de: "O Estado de S. Paulo, 12/10/2026, p. A20, com base no boletim de ocorrência", tipo: "versao",
+    exp: "É o relato dos policiais envolvidos, registrado no boletim. O jornal faz bem em atribuir; segundo a perícia, só um celular foi apreendido com ele." },
+  { id: "f4", grupo: "bolsa", txt: "O Ibovespa teve o maior salto diário em seis anos e meio, de 7,7%.", de: "O Globo, 06/10/2026, capa", tipo: "fato",
+    exp: "Variação do índice, registrada pela bolsa e conferível na série histórica." },
+  { id: "f5", grupo: "bolsa", txt: "Perspectiva de novo governo leva Bolsa a recorde.", de: "O Estado de S. Paulo, 06/10/2026, capa", tipo: "interp",
+    exp: "A alta é fato; a causa é leitura do mercado. Dentro, o próprio jornal atribui essa leitura a analistas sem nome. Na capa, ela virou afirmação. O Globo, no mesmo dia, formulou a causa de outro jeito: otimismo com o resultado do 1º turno, na expectativa de ajuste fiscal." },
+  { id: "f6", txt: "Trump escreveu que 125 milhões votaram na eleição presidencial da Índia, e depois corrigiu para Brasil.", de: "O Estado de S. Paulo, 06/10/2026, p. A11 (frase condensada)", tipo: "fato",
+    exp: "O que alguém escreveu está registrado e pode ser conferido. Registrar uma fala é fato, ainda que a fala esteja errada." },
+  { id: "f7", txt: "Ela claramente ainda estava viva, respirava e roncava; dava para ouvir.", de: "Testemunha da execução de Christa Pike, no vídeo do Le Monde de 08/10/2026 (tradução livre)", tipo: "versao",
+    exp: "É o relato de quem estava lá. Testemunho ocular vale muito, mas continua sendo a versão de alguém, e o Le Monde o põe frente a frente com a versão oficial." },
+  { id: "f8", txt: "Até onde sabemos, o Departamento de Correção seguiu exatamente o protocolo aprovado.", de: "Voz oficial no mesmo vídeo do Le Monde, 08/10/2026 (tradução livre)", tipo: "versao",
+    exp: "É a posição de uma parte envolvida, o Estado, com a ressalva embutida na própria frase (até onde sabemos)." },
+  { id: "f9", txt: "Explicações prováveis do resultado: a habilidade dos jovens nas redes sociais e o desgaste dos veteranos.", de: "Correio Popular, 08/10/2026, capa, sem atribuição (frase condensada)", tipo: "interp",
+    exp: "Na capa, o jornal oferece explicações prováveis sem atribuí-las a pesquisa nem a especialista. Na p. A6, especialistas da PUC-Campinas aparecem, mas nenhuma pesquisa de eleitorado é citada." },
+  { id: "f10", txt: "Sim, é uma das instituições para as quais já prestamos serviços.", de: "João Brasio, sobre o Pentágono, em entrevista ao Correio Popular de 04/10/2026, p. A4", tipo: "versao",
+    exp: "É o próprio interessado falando da própria credencial. Na capa da mesma edição, ele dizia que não podia confirmar nem negar." },
+  { id: "f11", txt: "Diferentemente do que foi publicado, o Delegado Éder Mauro (PL-PA) não foi eleito para o Senado.", de: "Correio Braziliense, 06/10/2026, seção Erramos", tipo: "fato",
+    exp: "O resultado da eleição é registro oficial, conferível no TSE. A frase é o jornal corrigindo um fato que tinha publicado errado." },
+  { id: "f12", txt: "A Polícia Federal diz que houve conluio entre o jornalista e um advogado para manchar a imagem do ministro.", de: "g1, 12/08/2026 (tradução da legenda)", tipo: "versao",
+    exp: "É a acusação de uma das partes, a polícia que investiga, ainda sem julgamento. A peça faz bem em atribuir." },
+  { id: "f13", txt: "Segundo as autoridades argentinas, a residência foi revogada porque ele não ficou no país o tempo exigido.", de: "Correio Braziliense, 13/10/2026, p. 5, sobre o jornalista Rogério Tomaz Jr.", tipo: "versao",
+    exp: "É a justificativa de uma parte envolvida, o governo que revogou a residência. O jornalista contesta e diz que a questão é política: outra versão." },
+  { id: "f14", txt: "São 2.977 drones, o mesmo número de vítimas dos atentados, desenhando as torres gêmeas.", de: "g1, 11/09/2026 (tradução da legenda)", tipo: "fato",
+    exp: "O número de vítimas é registro histórico, e a homenagem foi vista e descrita pela correspondente." },
+  { id: "f15", txt: "A vida curta de Raghad é agora mais uma das sombrias estatísticas de Gaza.", de: "The New York Times, 24/07/2026 (tradução livre)", tipo: "interp",
+    exp: "É a leitura que a narração faz do caso, o fecho que dá sentido à peça. Não é registro nem relato de envolvido." }
+];
+
+/* Ato 3: duas capas, um fato. Cada pessoa recebe um dos pares. */
+const PARES = [
+  {
+    id: "pecs", grupo: "pecs", nota: "Acervo de jornais, edições de 08/10/2026, conferidas no PDF. A linha fina do Correio Braziliense está na página 2.",
+    capas: [
+      { jornal: "O Estado de S. Paulo", info: "08/10/2026 · nº 48568", man: "Flávio mira maioridade penal e Judiciário; PT tenta apressar PEC da escala 6x1", fina: "Candidato do PL lista reformas e tenta barrar redução da jornada" },
+      { jornal: "Correio Braziliense", info: "08/10/2026 · nº 23.210", man: "Flávio modera o tom sobre mudanças na Constituição", fina: "Na página 2: candidato diz que obedecerá ao texto constitucional e que as modificações serão pontuais" }
+    ],
+    perguntas: [
+      { id: "q1", q: "Qual é o fato comum às duas manchetes?",
+        ops: [
+          { t: "Em Brasília, no dia 7, Flávio listou as propostas de emenda à Constituição que pretende apresentar se for eleito.", ok: true },
+          { t: "Flávio desistiu de propor a redução da maioridade penal depois da repercussão negativa do discurso em Goiânia." },
+          { t: "O PT apresentou no Congresso a PEC da escala 6x1 para responder às propostas do candidato do PL." },
+          { t: "Flávio anunciou que pretende convocar uma Assembleia Constituinte se for eleito no 2º turno." }
+        ],
+        exp: "Os dois jornais partem da mesma fala de 07/10, em Brasília, depois de encontro com o PP e o União Brasil: reforma do Judiciário, maioridade penal de 18 para 16 anos, pontos da reforma tributária e fim da reeleição. Os dois citam também o discurso da véspera, em Goiânia, sobre mudar a Constituição." },
+      { id: "q2", q: "Onde mora o juízo de cada jornal?",
+        ops: [
+          { t: "No verbo: mira lê a fala como ofensiva; modera o tom lê a mesma fala como recuo.", ok: true },
+          { t: "Nos números: cada manchete destaca uma proposta diferente do pacote apresentado." },
+          { t: "Na fonte: cada jornal ouviu um político diferente para comentar a fala." },
+          { t: "Em lugar nenhum: uma das duas manchetes é falsa." }
+        ],
+        exp: "Nenhuma das manchetes tem número nem fonte diferente. O juízo está inteiro no verbo. Detalhe que vale guardar: a mesma frase de Flávio sobre a maioridade penal aparece transcrita de jeitos diferentes nos dois jornais. Aspas também passam por edição." },
+      { id: "q3", q: "Que leitura a régua sustenta?",
+        ops: [
+          { t: "Nenhuma das duas mente: são duas interpretações do mesmo fato, e cada leitor recebe só uma delas.", ok: true },
+          { t: "O Correio é mais fiel, porque modera o tom é um verbo neutro." },
+          { t: "O Estadão é mais fiel, porque lista as propostas na manchete." },
+          { t: "As duas ferem o fundamento 1, porque inventaram a fala do candidato." }
+        ],
+        exp: "Modera o tom não é neutro: é uma leitura, tanto quanto mira. Listar propostas não torna o verbo neutro. É por isso que o comparativo é método da disciplina: só lado a lado a interpretação aparece como interpretação." }
+    ]
+  },
+  {
+    id: "bolsa", grupo: "bolsa", nota: "Acervo de jornais, edições de 06/10/2026, conferidas no PDF. No Globo, a chamada é secundária; a manchete do dia era outra. Os textos de apoio estão resumidos.",
+    capas: [
+      { jornal: "O Estado de S. Paulo", info: "06/10/2026 · nº 48566", man: "Perspectiva de novo governo leva Bolsa a recorde; dólar cai 4,12%", fina: "No texto da capa: o desempenho de Flávio no 1º turno reforçou, entre analistas, a expectativa de uma gestão alinhada ao ajuste das contas públicas" },
+      { jornal: "O Globo", info: "06/10/2026 · nº 34.028", man: "Resultado da eleição anima mercado, Bolsa dispara, e dólar cai a R$ 5", fina: "No texto da chamada: o otimismo com o resultado de Flávio, na expectativa de ajuste fiscal, levou ao maior salto diário do Ibovespa em seis anos e meio (7,7%)" }
+    ],
+    perguntas: [
+      { id: "q1", q: "Qual é o fato comum às duas chamadas?",
+        ops: [
+          { t: "No primeiro dia útil depois do 1º turno, a Bolsa subiu forte e o dólar caiu 4,12%.", ok: true },
+          { t: "O mercado financeiro passou a dar como certa a vitória de Flávio no 2º turno." },
+          { t: "O Banco Central vendeu dólares para segurar a cotação depois da eleição." },
+          { t: "O Ibovespa atingiu a maior pontuação de toda a sua história." }
+        ],
+        exp: "As duas registram a mesma queda do dólar, 4,12%, e a alta forte da Bolsa. O Globo dá o 7,7% na capa; o Estadão só na página B1. Que o mercado dá a vitória como certa é leitura, não fato." },
+      { id: "q2", q: "Onde as duas chamadas vão além do fato?",
+        ops: [
+          { t: "Na causa: as duas atribuem a alta a uma leitura política do resultado, que é interpretação de mercado, não dado.", ok: true },
+          { t: "No dólar: cada jornal informa uma variação diferente para a moeda americana no mesmo dia." },
+          { t: "Na data: um jornal trata da segunda-feira e o outro da terça-feira depois da eleição." },
+          { t: "Em lugar nenhum: tudo nas duas chamadas é número conferível em fonte primária." }
+        ],
+        exp: "A alta é fato; a causa é leitura. O Estadão põe a causa na manchete e, no texto, a atribui a analistas sem nome; o Globo a diz na própria voz e ouve analistas nomeados só na matéria interna." },
+      { id: "q3", q: "O que quer dizer recorde, na manchete do Estadão?",
+        ops: [
+          { t: "A maior alta diária desde março de 2020, como o próprio jornal informa na página B1.", ok: true },
+          { t: "A maior pontuação já registrada pelo Ibovespa desde a criação do índice." },
+          { t: "O maior volume de negócios já registrado num único dia na bolsa brasileira." },
+          { t: "A maior queda do dólar frente ao real em toda a série histórica." }
+        ],
+        exp: "Na página B1, o próprio Estadão informa que a alta de 7,7% foi a maior variação desde 24 de março de 2020. Recorde, na manchete, é de variação diária em seis anos e meio, não de pontos. Palavra forte em cima, precisão só lá dentro." }
+    ]
+  }
+];
+
+const PERFIS = [
+  { min: 80, nome: "Ombudsman de carteira", t: "Fundamento certo, grau calibrado e evidência que sustenta. É exatamente isso que a prova vai pedir." },
+  { min: 60, nome: "Régua firme", t: "A régua está na sua mão. Os pontos que faltaram estão no detalhe: releia os pareceres das peças em que a evidência não sustentou o veredicto." },
+  { min: 40, nome: "Régua em calibragem", t: "Você reconhece os fundamentos, mas ainda cai nas armadilhas de vizinhança (3 e 5, 1 e 7, 4 e 8). Releia as distinções da régua antes da prova." },
+  { min: 0, nome: "Régua torta", t: "Os fundamentos ainda se confundem. Volte à formulação da disciplina e refaça o caminho em três passos: fundamento, grau, evidência." }
+];
+</script>
+
+<script>
+(function () {
+  "use strict";
+
+  /* =====================================================================
+     PARA ONDE VAI A ENTREGA
+     Cada entrega vira uma linha na planilha do professor, por meio de um
+     Formulário Google ligado a ela. Os códigos entry.* são os campos.
+     ===================================================================== */
+  var ENVIO = {
+    acao: "https://docs.google.com/forms/d/e/1FAIpQLSeABGX2p2Fqg3G_zuwRi335LPTuYRGwzTHUnVgblfFnvxLZBQ/formResponse",
+    campos: {
+      nome: "entry.1966847668", ra: "entry.555987667", pontos: "entry.1228283775", aproveitamento: "entry.266646219",
+      comprovante: "entry.610231368", respostas: "entry.1837326582", veredicto: "entry.1374953809", dados: "entry.318363835"
+    }
+  };
+
+  var N_PECAS = 10, N_FRASES = 10;
+  var KEY = "plantao-dos-8:v2";
+  var KEY_TENT = "plantao-dos-8:tentativas";
+  var VERSAO = "2026-10-14b";
+  var app = document.getElementById("app");
+  var barra = document.getElementById("barra");
+  var gaveta = document.getElementById("gaveta");
+  var semMovimento = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  var MAX1 = N_PECAS * 4, MAX2 = N_FRASES, MAX3 = 6, MAX = MAX1 + MAX2 + MAX3;
+
+  function novo() {
+    return {
+      v: 2, tela: "capa", nome: "", ra: "", inicio: null, fim: null, tentativa: 1,
+      ordem: [], evOrdem: {}, i: 0, fase: "pergunta",
+      r1: {}, rasc: { f: null, g: null, e: null },
+      frases: [], r2: {}, a2ok: false,
+      par: 0, ordemOps: {}, r3: {}, a3ok: false,
+      vered: { caso: "", txt: "" },
+      envio: { estado: "nada", comprovante: "", quando: "" }
+    };
+  }
+  function carregar() {
+    try {
+      var o = JSON.parse(localStorage.getItem(KEY) || "null");
+      return o && o.v === 2 && o.tela ? o : null;
+    } catch (e) { return null; }
+  }
+  function salvar() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+  function apagar() { try { localStorage.removeItem(KEY); } catch (e) {} }
+  function contaTentativa() {
+    var n = 1;
+    try { n = Number(localStorage.getItem(KEY_TENT) || "0") + 1; localStorage.setItem(KEY_TENT, String(n)); } catch (e) {}
+    return n;
+  }
+
+  var S = novo();
+  var salvo = carregar();
+
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+  function embaralha(a) {
+    for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; }
+    return a;
+  }
+  function caso(id) { for (var i = 0; i < CASOS.length; i++) if (CASOS[i].id === id) return CASOS[i]; return null; }
+  function frase(id) { for (var i = 0; i < FRASES.length; i++) if (FRASES[i].id === id) return FRASES[i]; return null; }
+  function par() { return PARES[S.par] || PARES[0]; }
+  function grauNome(id) { for (var i = 0; i < GRAUS.length; i++) if (GRAUS[i].id === id) return GRAUS[i].t; return id; }
+  function tipoNome(id) { for (var i = 0; i < TIPOS.length; i++) if (TIPOS[i].id === id) return TIPOS[i].t; return id; }
+  function agora() {
+    var d = new Date();
+    function dd(n) { return (n < 10 ? "0" : "") + n; }
+    return dd(d.getDate()) + "/" + dd(d.getMonth() + 1) + "/" + d.getFullYear() + " " + dd(d.getHours()) + "h" + dd(d.getMinutes());
+  }
+
+  /* ---------------- sorteios ----------------
+     Peças: uma de cada fundamento e mais duas quaisquer, em ordem embaralhada.
+     Capas: um dos pares. Frases: dez, sem repetir o assunto do par sorteado. */
+  function sorteia() {
+    var escolhidas = [];
+    for (var f = 0; f < FUNDAMENTOS.length; f++) {
+      var deste = CASOS.filter(function (c) { return c.fund === f; });
+      if (deste.length) escolhidas.push(embaralha(deste.slice())[0].id);
+    }
+    var resto = embaralha(CASOS.filter(function (c) { return escolhidas.indexOf(c.id) < 0; }).map(function (c) { return c.id; }));
+    while (escolhidas.length < N_PECAS && resto.length) escolhidas.push(resto.shift());
+    S.ordem = embaralha(escolhidas);
+    S.par = Math.floor(Math.random() * PARES.length);
+    var grupo = par().grupo;
+    S.frases = embaralha(FRASES.filter(function (x) { return x.grupo !== grupo; }).map(function (x) { return x.id; })).slice(0, N_FRASES);
+  }
+
+  /* ---------------- pontuação ---------------- */
+
+  function pontuaCaso(c, r) {
+    var pf = r.f === c.fund ? 2 : (c.sec.indexOf(r.f) >= 0 ? 1 : 0);
+    var pe = r.e === 0 ? 1 : 0;
+    var gCerto = r.g === c.grau;
+    var noPrincipal = r.f === c.fund;
+    var pg = noPrincipal && gCerto && pe ? 1 : 0;
+    return { f: pf, g: pg, e: pe, gCerto: gCerto, noPrincipal: noPrincipal, total: pf + pg + pe };
+  }
+  function contas() {
+    var a1 = 0, a2 = 0, a3 = 0, armad = 0, evErr = 0, grauSemEv = 0, fundCertos = 0;
+    S.ordem.forEach(function (id) {
+      var r = S.r1[id]; if (!r) return;
+      var p = pontuaCaso(caso(id), r);
+      a1 += p.total;
+      if (p.f === 2) fundCertos++;
+      if (p.f === 1) armad++;
+      if (!p.e) evErr++;
+      if (p.noPrincipal && p.gCerto && !p.e) grauSemEv++;
+    });
+    if (S.a2ok) S.frases.forEach(function (fid) { var f = frase(fid); if (S.r2[fid] === f.tipo) a2++; });
+    if (S.a3ok) par().perguntas.forEach(function (q) { var k = S.r3[q.id]; if (k !== undefined && q.ops[k] && q.ops[k].ok) a3 += 2; });
+    var total = a1 + a2 + a3;
+    return { a1: a1, a2: a2, a3: a3, total: total, pct: Math.round(100 * total / MAX), armad: armad, evErr: evErr, grauSemEv: grauSemEv, fundCertos: fundCertos };
+  }
+  function perfil(pct) { for (var i = 0; i < PERFIS.length; i++) if (pct >= PERFIS[i].min) return PERFIS[i]; return PERFIS[PERFIS.length - 1]; }
+
+  /* ---------------- topo ---------------- */
+
+  function telaBarra() {
+    if (S.tela === "capa" || S.tela === "regras") { barra.innerHTML = ""; return; }
+    var n = S.ordem.length || N_PECAS;
+    var onde = "", passo = 0, totalPassos = n + 3;
+    if (S.tela === "caso") { onde = "Peça " + (S.i + 1) + " de " + n; passo = S.i + (S.fase === "parecer" ? 1 : 0); }
+    else if (S.tela === "a2") { onde = "Fato, versão ou interpretação"; passo = n + (S.a2ok ? 1 : 0); }
+    else if (S.tela === "a3") { onde = "Duas capas, um fato"; passo = n + 1 + (S.a3ok ? 1 : 0); }
+    else if (S.tela === "vered") { onde = "O veredicto da coluna"; passo = n + 2; }
+    else { onde = "Resultado e gabarito"; passo = totalPassos; }
+    var c = contas();
+    var h = '<div class="barra"><div class="in"><span class="marca">Plantão <span>dos 8</span></span>';
+    h += '<span class="onde">' + esc(onde) + "</span>";
+    h += '<span class="pts" title="Pontos até aqui">' + c.total + " pts</span>";
+    h += '<button class="regua-btn" data-acao="abrirRegua">Régua</button></div>';
+    h += '<div class="progresso"><i style="width:' + Math.round(100 * passo / totalPassos) + '%"></i></div></div>';
+    barra.innerHTML = h;
+  }
+
+  /* ---------------- capa e regras ---------------- */
+
+  function reguaVisual() {
+    var h = '<div class="regua-visual" aria-hidden="true">';
+    for (var i = 1; i <= 8; i++) h += "<span>" + i + "</span>";
+    return h + "</div>";
+  }
+  function telaCapa() {
+    var temSalvo = salvo && salvo.tela !== "capa" && salvo.tela !== "regras";
+    var h = '<div class="wrap capa">';
+    h += '<p class="small muted">Fundamentos de Jornalismo · PUC-Campinas · 2026/2</p>';
+    h += '<h1 tabindex="-1">Plantão <span>dos 8</span></h1>';
+    h += '<p class="lede">Você assumiu a coluna do ombudsman. Na mesa, peças reais do acervo da disciplina. A régua é sua.</p>';
+    h += reguaVisual();
+    if (temSalvo) {
+      h += "<p>Há um plantão em andamento neste aparelho, de <strong>" + esc(salvo.nome) + "</strong>.</p>";
+      h += '<button class="btn" data-acao="continuar">' + (salvo.tela === "fim" ? "Ver o resultado e o gabarito" : "Continuar de onde parei") + "</button>";
+      if (salvo.tela === "fim") h += '<button class="btn ghost" data-acao="zerar">Começar outro plantão</button>';
+      else h += '<p class="small muted" style="margin-top:.8rem">Se este aparelho não é seu, peça para quem estava jogando terminar antes.</p>';
+    } else {
+      h += '<div class="campo"><label for="nome">Nome completo</label>';
+      h += '<input id="nome" type="text" autocomplete="name" placeholder="Como aparece na lista de chamada" value="' + esc(S.nome) + '"></div>';
+      h += '<div class="campo"><label for="ra">RA</label>';
+      h += '<input id="ra" type="text" inputmode="numeric" autocomplete="off" placeholder="Seu registro acadêmico" value="' + esc(S.ra) + '">';
+      h += '<p class="dica">Se não souber de cabeça, deixe em branco. O nome completo basta.</p></div>';
+      h += '<p class="falta" id="falta-id"></p>';
+      h += '<button class="btn cherry" data-acao="identificar">Entrar no plantão</button>';
+      h += '<p class="aviso">Cada pessoa joga sozinha, no próprio aparelho. No fim, a entrega vai direto para a planilha do professor, com o seu nome, e você vê o resultado e o gabarito.</p>';
+    }
+    return h + "</div>";
+  }
+  function telaRegras() {
+    var h = '<div class="wrap">';
+    h += '<p class="small muted">Plantão de ' + esc(S.nome) + "</p>";
+    h += '<h2 tabindex="-1">Como o plantão funciona</h2>';
+    h += "<p>Você recebe " + N_PECAS + " peças reais sorteadas do acervo da disciplina: capas e páginas de jornal e reportagens de televisão, de junho a outubro de 2026. Cada pessoa recebe um conjunto e uma ordem diferentes. Em cada peça, três decisões:</p>";
+    h += '<ol class="regras">';
+    h += "<li><strong>O fundamento mais em jogo.</strong> O principal vale 2 pontos. Algumas peças têm um segundo fundamento defensável, que vale 1.</li>";
+    h += "<li><strong>O grau</strong>, na escala da ficha de análise:</li>";
+    h += "<li><strong>A evidência</strong> que sustenta o veredicto, entre três fatos verdadeiros da peça. Só um sustenta.</li>";
+    h += "</ol>";
+    h += '<div class="graus">';
+    GRAUS.forEach(function (g) { h += "<div><strong>" + g.t + ":</strong> " + g.def + ".</div>"; });
+    h += "</div>";
+    h += '<p class="ouro">Regra de ouro da disciplina: veredicto sem evidência não pontua. O grau vale 1 ponto só quando o fundamento é o principal e a evidência está certa.</p>';
+    h += "<p>Depois das peças vêm três etapas curtas: fato, versão ou interpretação, com dez frases reais; duas capas sobre o mesmo fato; e o veredicto da sua coluna, escrito por você.</p>";
+    h += "<p><strong>Nível alto.</strong> As peças têm armadilhas de propósito. Várias cumprem um fundamento e ferem outro, e o fundamento vizinho costuma parecer o certo. Depois de confirmar, não dá para voltar. É a mesma régua da prova.</p>";
+    h += '<p class="small muted">O botão Régua, no alto da tela, abre os oito fundamentos na formulação da disciplina sempre que você quiser.</p>';
+    h += '<button class="btn cherry" data-acao="comecar">Abrir a primeira peça</button>';
+    return h + "</div>";
+  }
+
+  /* ---------------- ato 1 ---------------- */
+
+  function cartaPeca(c) {
+    var h = '<article class="peca"><div class="cab"><strong>' + esc(c.veiculo) + "</strong><span>" + esc(c.data) + "</span></div>";
+    h += '<div class="corpo"><p class="small muted" style="margin-bottom:.35rem">' + esc(c.formato) + "</p>";
+    h += '<p class="tit">' + esc(c.titulo) + "</p>";
+    c.linhas.forEach(function (l) { h += "<p>" + esc(l) + "</p>"; });
+    h += '</div><p class="fonte">' + esc(c.fonte) + "</p></article>";
+    return h;
+  }
+  function ordemEvid(id) {
+    if (!S.evOrdem[id]) S.evOrdem[id] = embaralha([0, 1, 2]);
+    return S.evOrdem[id];
+  }
+  function telaCaso() {
+    var c = caso(S.ordem[S.i]);
+    var r = S.rasc;
+    var h = '<div class="wrap">';
+    h += '<h2 tabindex="-1" class="small muted" style="font-family:var(--sans);font-size:.85rem;font-weight:700;margin:.2rem 0 .3rem">Peça ' + (S.i + 1) + " de " + S.ordem.length + "</h2>";
+    h += cartaPeca(c);
+    h += '<section class="etapa"><div class="rot"><span class="n">1</span><span>Que fundamento está mais em jogo nesta peça?</span></div><div class="fundgrid">';
+    FUNDAMENTOS.forEach(function (f, i) {
+      h += '<button data-acao="f" data-i="' + i + '" aria-pressed="' + (r.f === i ? "true" : "false") + '"><span class="n">' + (i + 1) + "</span>" + esc(f.nome) + "</button>";
+    });
+    h += "</div></section>";
+    if (r.f !== null) {
+      h += '<section class="etapa"><div class="rot"><span class="n">2</span><span>A peça cumpre o fundamento ' + (r.f + 1) + "?</span></div><div class=\"chips\">";
+      GRAUS.forEach(function (g) {
+        h += '<button class="chip" data-acao="g" data-g="' + g.id + '" aria-pressed="' + (r.g === g.id ? "true" : "false") + '">' + g.t + "</button>";
+      });
+      h += "</div></section>";
+    }
+    if (r.f !== null && r.g) {
+      h += '<section class="etapa"><div class="rot"><span class="n">3</span><span>Que evidência da peça sustenta o seu veredicto?</span></div><div class="opcs">';
+      ordemEvid(c.id).forEach(function (k) {
+        h += '<button class="opc" data-acao="e" data-k="' + k + '" aria-pressed="' + (r.e === k ? "true" : "false") + '">' + esc(c.evid[k]) + "</button>";
+      });
+      h += "</div></section>";
+    }
+    var pronto = r.f !== null && r.g && r.e !== null;
+    h += '<button class="btn cherry" data-acao="confirmar"' + (pronto ? "" : " disabled") + ">Fechar o parecer</button>";
+    h += '<p class="small muted" style="margin-top:.5rem">' + (pronto ? "Depois de fechar, não dá para mudar." : "Escolha o fundamento, o grau e a evidência.") + "</p>";
+    return h + "</div>";
+  }
+  function detalheGrau(c, p) {
+    if (!p.noPrincipal) return "O grau só pontua sobre o fundamento principal. Para o fundamento " + (c.fund + 1) + ", o grau é " + grauNome(c.grau).toLowerCase() + ".";
+    if (!p.gCerto) return "O grau é " + grauNome(c.grau).toLowerCase() + ".";
+    return p.e ? "Certo." : "Certo, mas não pontua: veredicto sem evidência não vale.";
+  }
+  function telaParecer() {
+    var c = caso(S.ordem[S.i]);
+    var r = S.r1[c.id];
+    var p = pontuaCaso(c, r);
+    var ultimo = S.i === S.ordem.length - 1;
+    var h = '<div class="wrap">';
+    h += '<p class="small muted" style="margin:.2rem 0 .3rem">Peça ' + (S.i + 1) + " de " + S.ordem.length + " · " + esc(c.veiculo) + "</p>";
+    h += '<div class="resultado' + (p.total <= 1 ? " baixo" : "") + '"><h2 tabindex="-1">' + p.total + " de 4 pontos</h2><p>" + esc(c.titulo) + "</p></div>";
+    h += '<ul class="linhas">';
+    h += "<li><span class=\"o-que\">Fundamento: você marcou " + (r.f + 1) + ", " + esc(FUNDAMENTOS[r.f].curto) + "</span><span class=\"p " + (p.f ? "marca-ok" : "marca-nok") + "\">" + p.f + "</span>";
+    h += '<span class="det">' + (p.f === 2 ? "Certo: fundamento " + (c.fund + 1) + ", " + esc(FUNDAMENTOS[c.fund].curto) + "." : (p.f === 1 ? "Defensável, mas não é o principal. O principal é o " + (c.fund + 1) + ", " + esc(FUNDAMENTOS[c.fund].curto) + "." : "O principal é o " + (c.fund + 1) + ", " + esc(FUNDAMENTOS[c.fund].curto) + ".")) + "</span></li>";
+    h += "<li><span class=\"o-que\">Evidência</span><span class=\"p " + (p.e ? "marca-ok" : "marca-nok") + "\">" + p.e + "</span>";
+    h += '<span class="det">' + (p.e ? "Certa." : "A que sustenta é esta: " + esc(c.evid[0])) + "</span></li>";
+    h += "<li><span class=\"o-que\">Grau: você disse " + esc(grauNome(r.g).toLowerCase()) + "</span><span class=\"p " + (p.g ? "marca-ok" : "marca-nok") + "\">" + p.g + "</span>";
+    h += '<span class="det">' + esc(detalheGrau(c, p)) + "</span></li>";
+    h += "</ul>";
+    h += '<div class="bloco"><h3>Parecer do ombudsman</h3><p class="nota">' + esc(c.parecer.fund) + "</p><p class=\"nota\">" + esc(c.parecer.grau) + "</p></div>";
+    h += '<div class="bloco"><h3>A armadilha</h3><p class="alerta">' + esc(c.parecer.armadilha) + "</p></div>";
+    h += '<button class="btn' + (ultimo ? " cherry" : "") + '" data-acao="proxima">' + (ultimo ? "Seguir para fato, versão ou interpretação" : "Próxima peça") + "</button>";
+    return h + "</div>";
+  }
+
+  /* ---------------- ato 2 ---------------- */
+
+  function telaA2() {
+    var h = '<div class="wrap">';
+    h += '<h2 tabindex="-1">Fato, versão ou interpretação</h2>';
+    if (!S.a2ok) {
+      h += "<p>Dez frases tiradas de peças do acervo. Classifique cada uma. É o bloco da ficha de análise que mais fica em branco.</p>";
+      h += '<p class="small muted">Fato verificado: o que se confere em registro ou documento. Versão: o relato de um envolvido. Interpretação: a leitura do que o fato significa ou causa. Algumas frases foram condensadas; o sentido é o do original.</p>';
+    }
+    S.frases.forEach(function (fid, n) {
+      var f = frase(fid);
+      var esc2 = S.r2[f.id];
+      var cls = S.a2ok ? (esc2 === f.tipo ? " certo" : " errado") : "";
+      h += '<div class="frase' + cls + '"><p class="txt">' + esc(f.txt) + "</p><span class=\"de\">" + (n + 1) + ". " + esc(f.de) + "</span>";
+      h += '<div class="chips">';
+      TIPOS.forEach(function (t) {
+        h += '<button class="chip" data-acao="t" data-f="' + f.id + '" data-t="' + t.id + '" aria-pressed="' + (esc2 === t.id ? "true" : "false") + '"' + (S.a2ok ? " disabled" : "") + ">" + t.t + "</button>";
+      });
+      h += "</div>";
+      if (S.a2ok) h += '<p class="exp">' + (esc2 === f.tipo ? '<span class="marca-ok">Certo: ' + esc(tipoNome(f.tipo).toLowerCase()) + ".</span> " : '<span class="marca-nok">Era ' + esc(tipoNome(f.tipo).toLowerCase()) + ".</span> ") + esc(f.exp) + "</p>";
+      h += "</div>";
+    });
+    if (!S.a2ok) {
+      var faltam = S.frases.filter(function (fid) { return !S.r2[fid]; }).length;
+      h += '<button class="btn cherry" data-acao="conferirA2"' + (faltam ? " disabled" : "") + ">Conferir as dez</button>";
+      h += '<p class="small muted" style="margin-top:.5rem">' + (faltam ? "Faltam " + faltam + "." : "Depois de conferir, não dá para mudar.") + "</p>";
+    } else {
+      h += '<p style="margin-top:1rem"><strong>' + contas().a2 + " de " + MAX2 + "</strong> nesta etapa.</p>";
+      h += '<button class="btn" data-acao="irA3">Seguir para duas capas, um fato</button>';
+    }
+    return h + "</div>";
+  }
+
+  /* ---------------- ato 3 ---------------- */
+
+  function ordemOps(q) {
+    if (!S.ordemOps[q.id]) S.ordemOps[q.id] = embaralha(q.ops.map(function (_, i) { return i; }));
+    return S.ordemOps[q.id];
+  }
+  function telaA3() {
+    var pr = par();
+    var h = '<div class="wrap">';
+    h += '<h2 tabindex="-1">Duas capas, um fato</h2>';
+    h += "<p>Mesmo dia, mesmo assunto, dois jornais.</p>";
+    h += '<div class="capas">';
+    pr.capas.forEach(function (cp) {
+      h += '<div class="capinha"><div class="mast">' + esc(cp.jornal) + "<small>" + esc(cp.info) + "</small></div>";
+      h += '<p class="man">' + esc(cp.man) + '</p><p class="fina">' + esc(cp.fina) + "</p></div>";
+    });
+    h += "</div>";
+    h += '<p class="small muted">' + esc(pr.nota) + "</p>";
+    pr.perguntas.forEach(function (q, n) {
+      var sel = S.r3[q.id];
+      h += '<div class="perg"><p class="q">' + (n + 1) + ". " + esc(q.q) + '</p><div class="opcs">';
+      ordemOps(q).forEach(function (k) {
+        h += '<button class="opc" data-acao="q" data-q="' + q.id + '" data-k="' + k + '" aria-pressed="' + (sel === k ? "true" : "false") + '"' + (S.a3ok ? " disabled" : "") + ">" + esc(q.ops[k].t) + "</button>";
+      });
+      h += "</div>";
+      if (S.a3ok) {
+        var certo = sel !== undefined && q.ops[sel] && q.ops[sel].ok;
+        h += '<p class="exp">' + (certo ? '<span class="marca-ok">Certo, 2 pontos.</span> ' : '<span class="marca-nok">Não.</span> ') + esc(q.exp) + "</p>";
+      }
+      h += "</div>";
+    });
+    if (!S.a3ok) {
+      var faltam = pr.perguntas.filter(function (q) { return S.r3[q.id] === undefined; }).length;
+      h += '<button class="btn cherry" data-acao="conferirA3"' + (faltam ? " disabled" : "") + ">Conferir</button>";
+    } else {
+      h += '<button class="btn" data-acao="irVered">Seguir para o veredicto da coluna</button>';
+    }
+    return h + "</div>";
+  }
+
+  /* ---------------- veredicto ---------------- */
+
+  var MIN_VERED = 150, MAX_VERED = 900;
+  function telaVered() {
+    var h = '<div class="wrap">';
+    h += '<h2 tabindex="-1">O veredicto da sua coluna</h2>';
+    h += "<p>Escolha uma das peças do seu plantão e escreva o veredicto, de 2 a 4 linhas: esta cobertura está à altura dos fundamentos do jornalismo? Por quê? Cite o que, na peça, sustenta o que você diz.</p>";
+    h += '<p class="small muted">Esta parte não entra na pontuação automática. É lida pelo professor, e é o formato do veredicto da prova.</p>';
+    h += '<div class="campo"><label for="v-caso">Peça</label><select id="v-caso"><option value="">Escolha a peça</option>';
+    S.ordem.forEach(function (id, n) {
+      var c = caso(id);
+      h += '<option value="' + c.id + '"' + (S.vered.caso === c.id ? " selected" : "") + ">" + (n + 1) + ". " + esc(c.veiculo) + ", " + esc(c.titulo.length > 60 ? c.titulo.slice(0, 58) + "…" : c.titulo) + "</option>";
+    });
+    h += "</select></div>";
+    h += '<div class="campo"><label for="v-txt">Veredicto</label><textarea id="v-txt" maxlength="' + MAX_VERED + '" placeholder="Ex.: A peça cumpre parcialmente o fundamento ... porque ...">' + esc(S.vered.txt) + "</textarea>";
+    h += '<p class="contador" id="contador"></p></div>';
+    h += '<p class="falta" id="falta-v"></p>';
+    h += '<button class="btn cherry" id="btn-entregar" data-acao="entregar">Entregar e ver o gabarito</button>';
+    h += '<p class="small muted" style="margin-top:.5rem">Confira seu nome antes: ' + esc(S.nome) + (S.ra ? ", RA " + esc(S.ra) : "") + ".</p>";
+    return h + "</div>";
+  }
+  function atualizaVered() {
+    var t = document.getElementById("v-txt"), cont = document.getElementById("contador"), b = document.getElementById("btn-entregar"), sel = document.getElementById("v-caso");
+    if (!t) return;
+    var n = (t.value || "").trim().length;
+    if (cont) cont.textContent = n < MIN_VERED ? "Faltam " + (MIN_VERED - n) + " caracteres" : n + " caracteres";
+    if (b) b.disabled = n < MIN_VERED || !(sel && sel.value);
+  }
+
+  /* ---------------- entrega para a planilha ---------------- */
+
+  function hashCurto(s) {
+    var h = 2166136261;
+    for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; }
+    var a = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789", out = "";
+    for (var k = 0; k < 6; k++) { out += a[h % a.length]; h = Math.floor(h / a.length) + (k + 1) * 7919; }
+    return out;
+  }
+  function textoRespostas() {
+    var L = [];
+    L.push("ATO 1 · PEÇAS (fundamento / grau / evidência / pontos)");
+    S.ordem.forEach(function (id, n) {
+      var c = caso(id), r = S.r1[id];
+      if (!r) { L.push((n + 1) + ". " + c.veiculo + ": sem resposta"); return; }
+      var p = pontuaCaso(c, r);
+      L.push((n + 1) + ". " + c.veiculo + " (" + c.data + "): F" + (r.f + 1) + (p.f === 2 ? " certo" : (p.f === 1 ? " vizinho, era F" + (c.fund + 1) : " errado, era F" + (c.fund + 1))) +
+        " / " + grauNome(r.g) + (p.noPrincipal ? (p.gCerto ? " certo" : ", era " + grauNome(c.grau)) : " (sobre outro fundamento)") +
+        " / evidência " + (p.e ? "certa" : "errada") + " / " + p.total + " de 4");
+    });
+    L.push("");
+    L.push("ATO 2 · FATO, VERSÃO OU INTERPRETAÇÃO");
+    S.frases.forEach(function (fid, n) {
+      var f = frase(fid), r = S.r2[fid];
+      L.push((n + 1) + ". " + (r ? tipoNome(r) : "sem resposta") + (r === f.tipo ? " certo" : ", era " + tipoNome(f.tipo)) + " · " + f.txt.slice(0, 70));
+    });
+    L.push("");
+    L.push("ATO 3 · DUAS CAPAS (" + par().id + ")");
+    par().perguntas.forEach(function (q, n) {
+      var k = S.r3[q.id];
+      L.push((n + 1) + ". " + (k === undefined ? "sem resposta" : (q.ops[k].ok ? "certo" : "errado: " + q.ops[k].t.slice(0, 60))));
+    });
+    return L.join("\n");
+  }
+  function montaEntrega() {
+    var c = contas();
+    var min = S.inicio && S.fim ? Math.round((S.fim - S.inicio) / 60000) : null;
+    var vc = caso(S.vered.caso);
+    var dados = {
+      jogo: "plantao-dos-8", versao: VERSAO, tentativa: S.tentativa,
+      inicio: S.inicio ? new Date(S.inicio).toISOString() : null, fim: S.fim ? new Date(S.fim).toISOString() : null, minutos: min,
+      pontos: { ato1: c.a1, ato2: c.a2, ato3: c.a3, total: c.total, max: MAX },
+      diagnostico: { fundamentosCertos: c.fundCertos, fundamentoVizinho: c.armad, evidenciasErradas: c.evErr, grauCertoSemEvidencia: c.grauSemEv },
+      ato1: S.ordem.map(function (id) { var r = S.r1[id] || {}; return { caso: id, f: r.f !== undefined && r.f !== null ? r.f + 1 : null, g: r.g || null, evidenciaCerta: r.e === 0 }; }),
+      ato2: S.frases.map(function (fid) { return { frase: fid, resposta: S.r2[fid] || null }; }),
+      ato3: { par: par().id, respostas: S.r3 }
+    };
+    return {
+      nome: S.nome, ra: S.ra || "",
+      pontos: c.total + " de " + MAX + " (peças " + c.a1 + "/" + MAX1 + "; fato-versão-interpretação " + c.a2 + "/" + MAX2 + "; capas " + c.a3 + "/" + MAX3 + ")",
+      aproveitamento: c.pct + "%",
+      comprovante: S.envio.comprovante,
+      respostas: textoRespostas(),
+      veredicto: (vc ? "Peça: " + vc.veiculo + ", " + vc.data + ", " + vc.titulo + "\n\n" : "") + (S.vered.txt || "").trim(),
+      dados: JSON.stringify(dados)
+    };
+  }
+  function enviarAgora() {
+    var e = montaEntrega();
+    if (!ENVIO.acao) { S.envio.estado = "semdestino"; salvar(); render("topo"); return; }
+    var corpo = new URLSearchParams();
+    Object.keys(ENVIO.campos).forEach(function (k) { if (ENVIO.campos[k]) corpo.append(ENVIO.campos[k], e[k] || ""); });
+    S.envio.estado = "enviando"; salvar(); render("topo");
+    var feito = false;
+    function ok() { if (feito) return; feito = true; S.envio.estado = "ok"; S.envio.quando = agora(); salvar(); render("topo"); }
+    function falhou() {
+      if (feito) return;
+      try { if (navigator.sendBeacon && navigator.sendBeacon(ENVIO.acao, corpo)) { ok(); return; } } catch (x) {}
+      feito = true; S.envio.estado = "erro"; salvar(); render("topo");
+    }
+    try { fetch(ENVIO.acao, { method: "POST", mode: "no-cors", body: corpo }).then(ok, falhou); }
+    catch (x) { falhou(); }
+  }
+
+  /* ---------------- resultado e gabarito ---------------- */
+
+  function gabarito() {
+    var h = '<section class="bloco"><h3>Gabarito das peças</h3>';
+    S.ordem.forEach(function (id, n) {
+      var c = caso(id), r = S.r1[id]; if (!r) return;
+      var p = pontuaCaso(c, r);
+      h += '<div class="gab"><p class="gab-tit"><span>' + (n + 1) + ". " + esc(c.veiculo) + ", " + esc(c.data) + "</span><span class=\"" + (p.total >= 3 ? "marca-ok" : "marca-nok") + "\">" + p.total + "/4</span></p>";
+      h += '<p class="gab-peca">' + esc(c.titulo) + "</p>";
+      h += '<p><strong>Fundamento:</strong> ' + (c.fund + 1) + ". " + esc(FUNDAMENTOS[c.fund].nome) + (c.sec.length ? ' <span class="muted">(vizinho que vale 1: ' + c.sec.map(function (x) { return x + 1; }).join(", ") + ")</span>" : "") + (p.f === 2 ? ' <span class="marca-ok">✓</span>' : ' <span class="marca-nok">você: ' + (r.f + 1) + "</span>") + "</p>";
+      var gv;
+      if (p.noPrincipal) gv = p.gCerto ? (p.e ? ' <span class="marca-ok">✓</span>' : ' <span class="marca-nok">certo, sem evidência não pontua</span>') : ' <span class="marca-nok">você: ' + esc(grauNome(r.g).toLowerCase()) + "</span>";
+      else gv = ' <span class="marca-nok">você avaliou outro fundamento</span>';
+      h += '<p><strong>Grau:</strong> ' + esc(grauNome(c.grau)) + gv + "</p>";
+      h += '<p><strong>Evidência:</strong> ' + esc(c.evid[0]) + (p.e ? ' <span class="marca-ok">✓</span>' : "") + "</p>";
+      h += "</div>";
+    });
+    h += "</section>";
+
+    h += '<section class="bloco"><h3>Gabarito de fato, versão ou interpretação</h3><table class="tabela"><tr><th>Frase</th><th>Gabarito</th><th>Você</th></tr>';
+    S.frases.forEach(function (fid, n) {
+      var f = frase(fid), r = S.r2[fid];
+      h += "<tr><td>" + (n + 1) + ". " + esc(f.txt) + "</td><td>" + esc(tipoNome(f.tipo)) + "</td><td>" + (r === f.tipo ? '<span class="marca-ok">✓</span>' : '<span class="marca-nok">' + esc(r ? tipoNome(r) : "sem resposta") + "</span>") + "</td></tr>";
+    });
+    h += "</table></section>";
+
+    h += '<section class="bloco"><h3>Gabarito das duas capas</h3>';
+    par().perguntas.forEach(function (q, n) {
+      var k = S.r3[q.id], certa = null;
+      q.ops.forEach(function (o) { if (o.ok) certa = o; });
+      var acertou = k !== undefined && q.ops[k] && q.ops[k].ok;
+      h += '<p><strong>' + (n + 1) + ". " + esc(q.q) + "</strong> " + esc(certa.t) + (acertou ? ' <span class="marca-ok">✓</span>' : ' <span class="marca-nok">✗</span>') + "</p>";
+    });
+    h += "</section>";
+    return h;
+  }
+  function telaFim() {
+    var c = contas(), pf = perfil(c.pct);
+    var h = '<div class="wrap">';
+    if (S.envio.estado === "enviando") {
+      return h + '<h2 tabindex="-1">Enviando a entrega…</h2><p>Não feche a página.</p></div>';
+    }
+    if (S.envio.estado === "ok") {
+      h += '<h2 tabindex="-1">Entrega registrada</h2>';
+      h += '<div class="comprovante"><p class="small">Comprovante</p><p class="cod">' + esc(S.envio.comprovante) + "</p>";
+      h += "<p>" + esc(S.nome) + (S.ra ? " · RA " + esc(S.ra) : "") + "</p><p class=\"small\">Enviado em " + esc(S.envio.quando) + " para a planilha do professor.</p></div>";
+    } else if (S.envio.estado === "erro") {
+      h += '<h2 tabindex="-1">A entrega não saiu</h2>';
+      h += '<p class="alerta">A conexão falhou na hora do envio. Confira a internet e tente de novo. Suas respostas estão guardadas neste aparelho.</p>';
+      h += '<button class="btn cherry" data-acao="reenviar">Enviar de novo</button>';
+    } else {
+      h += '<h2 tabindex="-1">Plantão concluído</h2>';
+      h += '<p class="alerta">Esta cópia do jogo ainda não está ligada à planilha do professor.</p>';
+    }
+    h += '<div class="placar">';
+    h += '<div><div class="n">' + c.a1 + '</div><div class="r">peças, de ' + MAX1 + "</div></div>";
+    h += '<div><div class="n">' + c.a2 + '</div><div class="r">fato, versão, interpretação, de ' + MAX2 + "</div></div>";
+    h += '<div><div class="n">' + c.a3 + '</div><div class="r">duas capas, de ' + MAX3 + "</div></div>";
+    h += "</div>";
+    h += "<p><strong>" + c.total + " de " + MAX + " pontos, " + c.pct + "%.</strong></p>";
+    h += '<p class="perfil">' + esc(pf.nome) + "</p><p>" + esc(pf.t) + "</p>";
+    var diag = [];
+    if (c.armad) diag.push("Em " + c.armad + (c.armad === 1 ? " peça" : " peças") + " você escolheu o fundamento vizinho, defensável mas não o principal.");
+    if (c.grauSemEv) diag.push("Em " + c.grauSemEv + (c.grauSemEv === 1 ? " peça" : " peças") + " você acertou o grau com a evidência errada, e o grau não pontuou.");
+    if (c.evErr) diag.push("Em " + c.evErr + (c.evErr === 1 ? " peça" : " peças") + " a evidência escolhida não sustentava o veredicto.");
+    if (diag.length) h += '<div class="bloco"><h3>Onde a régua escapou</h3>' + diag.map(function (d) { return "<p>" + esc(d) + "</p>"; }).join("") + "</div>";
+    h += gabarito();
+    h += '<p class="small muted" style="margin-top:1.2rem">Plantão dos 8, jogo da disciplina Fundamentos de Jornalismo (PUC-Campinas, 2026/2), do Prof. Artur Araujo. As peças são reais e estão no acervo da disciplina; os trechos em língua estrangeira estão em tradução livre. Régua: os 8 fundamentos na formulação da disciplina, a partir de KOVACH, Bill; ROSENSTIEL, Tom. Os elementos do jornalismo. 2. ed. São Paulo: Geração Editorial, 2004.</p>';
+    return h + "</div>";
+  }
+
+  /* ---------------- render ---------------- */
+
+  function render(scroll) {
+    var h;
+    if (S.tela === "capa") h = telaCapa();
+    else if (S.tela === "regras") h = telaRegras();
+    else if (S.tela === "caso") h = S.fase === "parecer" ? telaParecer() : telaCaso();
+    else if (S.tela === "a2") h = telaA2();
+    else if (S.tela === "a3") h = telaA3();
+    else if (S.tela === "vered") h = telaVered();
+    else h = telaFim();
+    app.innerHTML = h;
+    telaBarra();
+    if (S.tela === "vered") atualizaVered();
+    if (scroll === "topo") {
+      window.scrollTo(0, 0);
+      var foco = app.querySelector("h1[tabindex], h2[tabindex]");
+      if (foco) foco.focus({ preventScroll: true });
+    }
+  }
+  function rolaPara(sel) {
+    var el = app.querySelector(sel);
+    if (el) el.scrollIntoView({ behavior: semMovimento ? "auto" : "smooth", block: "nearest" });
+  }
+  function mantemRolagem() { var y = window.scrollY; render(); window.scrollTo(0, y); }
+
+  (function montaGaveta() {
+    var ol = document.getElementById("gaveta-lista"), h = "";
+    FUNDAMENTOS.forEach(function (f, i) { h += '<li><strong><span class="num">' + (i + 1) + "</span>" + esc(f.nome) + "</strong><p>" + esc(f.principio) + "</p></li>"; });
+    ol.innerHTML = h;
+  })();
+
+  /* ---------------- ações ---------------- */
+
+  document.addEventListener("input", function (ev) {
+    if (ev.target && ev.target.id === "v-txt") { S.vered.txt = ev.target.value; salvar(); atualizaVered(); }
+  });
+  document.addEventListener("change", function (ev) {
+    if (ev.target && ev.target.id === "v-caso") { S.vered.caso = ev.target.value; salvar(); atualizaVered(); }
+  });
+  gaveta.addEventListener("click", function (ev) { if (ev.target === gaveta) gaveta.hidden = true; });
+  document.addEventListener("keydown", function (ev) { if (ev.key === "Escape" && !gaveta.hidden) gaveta.hidden = true; });
+
+  document.addEventListener("click", function (ev) {
+    if (!ev.target || !ev.target.closest) return;
+    var b = ev.target.closest("[data-acao]");
+    if (!b || b.disabled) return;
+    var a = b.getAttribute("data-acao");
+
+    if (a === "abrirRegua") { gaveta.hidden = false; return; }
+    if (a === "fecharRegua") { gaveta.hidden = true; return; }
+    if (a === "identificar") {
+      var nome = (document.getElementById("nome").value || "").replace(/\s+/g, " ").trim();
+      var ra = (document.getElementById("ra").value || "").replace(/\s+/g, "").trim();
+      if (nome.split(" ").length < 2 || nome.length < 5) {
+        document.getElementById("falta-id").textContent = "Escreva o nome completo, como aparece na lista de chamada.";
+        document.getElementById("nome").focus();
+        return;
+      }
+      S.nome = nome; S.ra = ra; S.tela = "regras"; salvar(); render("topo"); return;
+    }
+    if (a === "continuar") { S = salvo; salvo = null; render("topo"); return; }
+    if (a === "zerar") { apagar(); salvo = null; S = novo(); render("topo"); return; }
+    if (a === "comecar") {
+      sorteia();
+      S.i = 0; S.fase = "pergunta"; S.rasc = { f: null, g: null, e: null };
+      S.inicio = Date.now(); S.tentativa = contaTentativa();
+      S.tela = "caso"; salvar(); render("topo"); return;
+    }
+    if (a === "f") { S.rasc.f = Number(b.getAttribute("data-i")); salvar(); render(); rolaPara("section.etapa:nth-of-type(2)"); return; }
+    if (a === "g") { S.rasc.g = b.getAttribute("data-g"); salvar(); render(); rolaPara(".opcs"); return; }
+    if (a === "e") { S.rasc.e = Number(b.getAttribute("data-k")); salvar(); render(); rolaPara("[data-acao=confirmar]"); return; }
+    if (a === "confirmar") {
+      if (S.rasc.f === null || !S.rasc.g || S.rasc.e === null) return;
+      S.r1[S.ordem[S.i]] = { f: S.rasc.f, g: S.rasc.g, e: S.rasc.e };
+      S.fase = "parecer"; salvar(); render("topo"); return;
+    }
+    if (a === "proxima") {
+      if (S.i < S.ordem.length - 1) { S.i++; S.fase = "pergunta"; S.rasc = { f: null, g: null, e: null }; }
+      else S.tela = "a2";
+      salvar(); render("topo"); return;
+    }
+    if (a === "t") { S.r2[b.getAttribute("data-f")] = b.getAttribute("data-t"); salvar(); mantemRolagem(); return; }
+    if (a === "conferirA2") { S.a2ok = true; salvar(); mantemRolagem(); return; }
+    if (a === "irA3") { S.tela = "a3"; salvar(); render("topo"); return; }
+    if (a === "q") { S.r3[b.getAttribute("data-q")] = Number(b.getAttribute("data-k")); salvar(); mantemRolagem(); return; }
+    if (a === "conferirA3") { S.a3ok = true; salvar(); mantemRolagem(); return; }
+    if (a === "irVered") { S.tela = "vered"; salvar(); render("topo"); return; }
+    if (a === "entregar") {
+      var txt = (S.vered.txt || "").trim();
+      if (txt.length < MIN_VERED || !S.vered.caso) { document.getElementById("falta-v").textContent = "Escolha a peça e escreva pelo menos " + MIN_VERED + " caracteres."; return; }
+      S.fim = Date.now();
+      S.envio.comprovante = "P8-" + hashCurto(S.nome + "|" + S.fim + "|" + contas().total);
+      S.tela = "fim"; salvar(); enviarAgora(); return;
+    }
+    if (a === "reenviar") { enviarAgora(); return; }
+  });
+
+  render("topo");
+})();
+</script>
+</body>
+</html>
